@@ -1,0 +1,157 @@
+/* styles/Register.css */
+
+.register-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(to right, #f0f4f8, #d9e2ec);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.register-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.register-container {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 2rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.register-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.register-box h2 {
+  text-align: center;
+  margin-bottom: 1.8rem;
+  font-size: 1.75rem;
+  color: #1f2937;
+}
+
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.register-form-group {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-bottom: 1.5rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.register-form-group label {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.register-form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #f0f6ff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.register-form-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.register-btn {
+  width: 100%;
+  max-width: 320px;
+  padding: 0.75rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.register-btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.register-btn:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+.register-message {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+  animation: fadeIn 0.4s ease;
+}
+
+.register-message.error {
+  color: #dc2626;
+}
+
+.register-message.success {
+  color: #059669;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .register-container {
+    padding: 1.5rem;
+  }
+
+  .register-box h2 {
+    font-size: 1.5rem;
+  }
+
+  .register-form-group input {
+    font-size: 0.95rem;
+  }
+}

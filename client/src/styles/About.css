@@ -1,0 +1,126 @@
+:root {
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --background: #f0f4f8;
+  --white: #ffffff;
+  --gray: #cbd5e1;
+  --text: #1f2937;
+  --accent: #4CAF50;
+}
+
+/* Contenedor general */
+.home-guest-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--background);
+  color: var(--text);
+  padding: 2rem 1rem;
+  line-height: 1.6;
+}
+
+/* Sección principal (hero) */
+.hero {
+  text-align: center;
+  background: linear-gradient(135deg, #e3f2fd, #ffffff);
+  padding: 60px 20px;
+  border-radius: 16px;
+  margin-bottom: 40px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  animation: fadeInUp 0.8s ease forwards;
+  opacity: 0;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  color: #374151;
+}
+
+/* Bloques de secciones */
+.about {
+  background-color: var(--white);
+  border-left: 5px solid var(--accent);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  text-align: center; /* ✅ Centra todo el contenido */
+}
+
+.about.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.about h2 {
+  color: var(--accent);
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.about p {
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+/* Bloque de valores */
+.valor {
+  margin-top: 1.5rem;
+}
+
+.valor h3 {
+  font-size: 1.2rem;
+  color: var(--primary-dark);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.valor p {
+  font-size: 0.95rem;
+  color: #374151;
+  max-width: 700px;
+  margin: 0 auto 20px auto;
+  text-align: center;
+}
+
+/* Animación de entrada */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .about h2 {
+    font-size: 1.5rem;
+  }
+
+  .valor h3 {
+    font-size: 1rem;
+  }
+
+  .valor p {
+    font-size: 0.9rem;
+  }
+}

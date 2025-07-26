@@ -1,0 +1,133 @@
+/*  css reporte actividades */
+
+.boton-volver {
+  background-color:rgb(34, 167, 85); /* azul oscuro */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  width: auto;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.boton-volver:hover {
+  background-color: #3730a3; /* azul más oscuro */
+}
+
+.reporte-container {
+  padding: 20px;
+}
+
+.reporte-tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reporte-tabla th,
+.reporte-tabla td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+.reporte-tabla th {
+  background-color: #f2f2f2;
+}
+
+.accion-btn {
+  display: inline-block;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
+}
+
+.botones-container {
+  display: flex;
+  gap: 6px; /* espacio entre botones */
+  align-items: center;
+  justify-content: flex-start; /* opcional, para que queden a la izquierda */
+  white-space: nowrap; /* evita que se rompan líneas */
+}
+
+.accion-btn.azul {
+  background-color: #007bff;
+  color: white;
+}
+
+.accion-btn.rojo {
+  background-color: #dc3545;
+  color: white;
+}
+
+.paginacion-texto {
+  margin-top: 15px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  user-select: none;
+}
+
+/* General para todos los span con rol botón */
+.paginacion-texto span {
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+/* Control (Anterior/Próxima) habilitado en azul */
+.pagina-control.activo {
+  color: #4f46e5; /* azul */
+}
+
+.pagina-control.activo:hover {
+  background-color: #e0e7ff;
+}
+
+/* Control deshabilitado gris y cursor no permitido */
+.pagina-control.disabled {
+  color: #9ca3af;
+  cursor: default;
+}
+
+/* Números de página normales (no actuales y no último) azul */
+.pagina-numero.activo {
+  color: #4f46e5; /* azul */
+}
+
+.pagina-numero.activo:hover {
+  background-color: #e0e7ff;
+}
+
+/* Página actual en negro, sin subrayado ni hover, cursor default */
+.pagina-numero.actual {
+  color: #000000; /* negro */
+  font-weight: 700;
+  cursor: default;
+}
+
+/* Última página (si no es actual) en gris */
+.pagina-numero.ultimo-no-activo {
+  color: #9ca3af; /* gris */
+}
+
+.pagina-numero.ultimo-no-activo:hover {
+  background-color: transparent;
+  cursor: pointer;
+  color: #4f46e5; /* se pone azul si se pasa el mouse */
+}
+
+/* Puntos suspensivos, sin cursor ni color */
+.puntos {
+  cursor: default;
+  color: #6b7280; /* gris oscuro */
+  padding: 0;
+}

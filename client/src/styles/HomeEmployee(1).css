@@ -1,0 +1,130 @@
+/* --- CONTENEDOR PRINCIPAL --- */
+.empleado-wrapper {
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #f0f4f8, #d9e2ec);
+  min-height: 100vh;
+}
+
+/* --- DASHBOARD PRINCIPAL --- */
+.empleado-dashboard {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* --- TEXTO DE BIENVENIDA --- */
+.empleado-dashboard h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.empleado-dashboard p {
+  color: #4b5563;
+  margin-bottom: 1.25rem;
+}
+
+/* --- BOTÓN DE ASISTENCIA --- */
+.asistencia-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.asistencia-btn:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.asistencia-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* --- GRID DE INDICADORES --- */
+.indicadores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* --- TARJETAS DE INDICADORES --- */
+.indicador-card {
+  background: #f9fafb;
+  border-left: 5px solid #3b82f6;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+}
+
+.indicador-card:hover {
+  transform: translateY(-2px);
+}
+
+.indicador-icon {
+  font-size: 2rem;
+  color: #3b82f6;
+}
+
+.indicador-card h4 {
+  font-size: 1rem;
+  margin: 0;
+  color: #1f2937;
+}
+
+.indicador-card p {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #111827;
+  margin: 0;
+}
+
+/* --- ANIMACIONES --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .empleado-dashboard {
+    padding: 1.5rem;
+  }
+
+  .empleado-dashboard h2 {
+    font-size: 1.5rem;
+  }
+
+  .indicador-card h4 {
+    font-size: 0.95rem;
+  }
+
+  .indicador-card p {
+    font-size: 1.1rem;
+  }
+}

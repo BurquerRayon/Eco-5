@@ -1,0 +1,38 @@
+.disponibilidad-horarios {
+    margin-top: 10px;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  
+  .horarios-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .horario-bloque {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #fff;
+  }
+  
+  .horario-bloque.libre {
+    background-color: #28a745;
+  }
+  
+  .horario-bloque.bajo {
+    background-color: #ffc107;
+    color: #000;
+  }
+  
+  .horario-bloque.lleno {
+    background-color: #dc3545;
+  }
+  
+  .horario-bloque.seleccionado {
+    border: 2px solid #000;
+  }
+  

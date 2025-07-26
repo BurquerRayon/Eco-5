@@ -1,0 +1,116 @@
+/* Lista de empleados de mantenimiento
+ */
+.mantenimiento-container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+.botones-formulario {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.reporte-actividades {
+  margin-top: 30px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-top: 2px solid #ccc;
+}
+
+.reporte-actividades .actividad-card.reporte {
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+.form-nueva {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Inputs y textareas */
+.form-nueva input,
+.form-nueva textarea,
+.form-nueva select {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin: 0.5rem 0;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* Multibox específico */
+.form-nueva select[multiple] {
+  height: 120px;
+  resize: vertical;
+}
+/* Estilos para el campo de fecha */
+/* Etiquetas */
+.form-nueva label {
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+/* Botón principal (Agregar) */
+.form-nueva button {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: fit-content; /* se ajusta al contenido */
+  margin-top: 0.5rem; /* espaciado con los campos anteriores */
+}
+
+.form-nueva button:hover {
+  background-color: #218838;
+}
+
+.lista-actividades {
+  margin-top: 2rem;
+}
+
+.actividad-card {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+/* Botones dentro de cada actividad */
+.actividad-card button {
+  margin-right: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Azul: Marcar como completada */
+.actividad-card button:first-of-type {
+  background-color: #007bff;
+  color: white;
+}
+
+.actividad-card button:first-of-type:hover {
+  background-color: #0056b3;
+}
+
+/* Rojo: Eliminar */
+.actividad-card button:last-of-type {
+  background-color: #dc3545;
+  color: white;
+}
+
+.actividad-card button:last-of-type:hover {
+  background-color: #c82333;
+}
