@@ -121,6 +121,15 @@ router.post('/crear', async (req, res) => {
         `);
     }
 
+    // Emitir evento de nueva reserva para actualizar estadísticas
+    if (global.io) {
+      global.io.emit('reserva_creada', {
+        id_reserva,
+        detalles,
+        timestamp: new Date()
+      });
+    }
+
     res.status(201).json({ message: '✅ Reserva creada exitosamente' });
 
   } catch (err) {
@@ -261,6 +270,16 @@ router.put('/editar/:id_reserva', async (req, res) => {
         `);
 
       await transaction.commit();
+      
+      // Emitir evento de reserva actualizada
+      if (global.io) {
+        global.io.emit('reserva_actualizada', {
+          id_reserva,
+          detalles,
+          timestamp: new Date()
+        });
+      }
+      
       res.json({ message: '✅ Reserva actualizada correctamente' });
 
     } catch (err) {
@@ -306,6 +325,14 @@ router.put('/cancelar/:id_reserva', async (req, res) => {
       return res.status(500).json({ message: 'No se pudo cancelar la reserva' });
     }
     
+    // Emitir evento de reserva cancelada
+    if (global.io) {
+      global.io.emit('reserva_cancelada', {
+        id_reserva,
+        timestamp: new Date()
+      });
+    }
+
     res.json({ message: '✅ Reserva cancelada exitosamente' });
   } catch (err) {
     console.error('Error al cancelar reserva:', err);

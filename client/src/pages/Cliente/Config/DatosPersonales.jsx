@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Corregido: importar desde react-router-dom
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-//import '../styles/DatosPersonales.css';
+import '../../../styles/DatosPersonales.css';
 
 const DatosPersonales = () => {
   const [formData, setFormData] = useState({
@@ -26,14 +26,12 @@ const DatosPersonales = () => {
     message: { text: '', type: '' }
   });
 
-  const navigate = useNavigate(); // Correctamente importado de react-router-dom
+  const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Cargar datos iniciales
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Verificar autenticación primero
         if (!user?.id_usuario) {
           navigate('/login');
           return;
@@ -109,7 +107,6 @@ const DatosPersonales = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validar campos requeridos
     if (!formData.nombre.trim()) {
       setUiState(prev => ({
         ...prev,
@@ -152,16 +149,16 @@ const DatosPersonales = () => {
 
   if (uiState.loading) {
     return (
-      <div className="datos-personales-container">
+      <div className="datos-card">
         <div className="loading-spinner"></div>
         <p>Cargando datos...</p>
       </div>
     );
   }
-
+  
   return (
-    <div className="datos-personales-container">
-      <h2>Mis Datos Personales</h2>
+    <div className="datos-container">
+      <h3 className="section-title">Datos Personales</h3>
       
       {uiState.message.text && (
         <div className={`alert-message ${uiState.message.type}`}>
@@ -169,110 +166,118 @@ const DatosPersonales = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Nombre</label>
-          <input
-            type="text"
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleChange}
-            required
-          />
+      <form onSubmit={handleSubmit} className="quad-column-form">
+        {/* Primera fila de 4 bloques */}
+        <div className="form-row">
+          <div className="form-block">
+            <label>Nombre</label>
+            <input
+              type="text"
+              name="nombre"
+              value={formData.nombre}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-block">
+            <label>Apellido</label>
+            <input
+              type="text"
+              name="apellido"
+              value={formData.apellido}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-block">
+            <label>Cédula</label>
+            <input
+              type="text"
+              name="cedula"
+              value={formData.cedula}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-block">
+            <label>Teléfono</label>
+            <input
+              type="tel"
+              name="telefono"
+              value={formData.telefono}
+              onChange={handleChange}
+              required
+            />
+          </div>
         </div>
 
-        <div className="form-group">
-          <label>Apellido</label>
-          <input
-            type="text"
-            name="apellido"
-            value={formData.apellido}
-            onChange={handleChange}
-            required
-          />
+        {/* Segunda fila de 4 bloques */}
+        <div className="form-row">
+          <div className="form-block">
+            <label>Fecha Nacimiento</label>
+            <input
+              type="date"
+              name="fecha_nacimiento"
+              value={formData.fecha_nacimiento}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-block">
+            <label>Edad</label>
+            <input
+              type="number"
+              name="edad"
+              value={formData.edad}
+              onChange={handleChange}
+              readOnly
+            />
+          </div>
+
+          <div className="form-block">
+            <label>Nacionalidad</label>
+            <select
+              name="id_nacionalidad"
+              value={formData.id_nacionalidad}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccione...</option>
+              {options.nacionalidades.map(n => (
+                <option key={n.id_nacionalidad} value={n.id_nacionalidad}>
+                  {n.nombre} ({n.codigo_iso})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-block">
+            <label>Sexo</label>
+            <select
+              name="id_sexo"
+              value={formData.id_sexo}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccione...</option>
+              {options.sexos.map(s => (
+                <option key={s.id_sexo} value={s.id_sexo}>
+                  {s.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="form-group">
-          <label>Cédula</label>
-          <input
-            type="text"
-            name="cedula"
-            value={formData.cedula}
-            onChange={handleChange}
-            required
-          />
+        <div className="form-actions">
+          <button type="submit" className="save-btn">
+            Guardar Cambios
+          </button>
         </div>
-
-        <div className="form-group">
-          <label>Teléfono</label>
-          <input
-            type="tel"
-            name="telefono"
-            value={formData.telefono}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Fecha de Nacimiento</label>
-          <input
-            type="date"
-            name="fecha_nacimiento"
-            value={formData.fecha_nacimiento}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Edad</label>
-          <input
-            type="number"
-            name="edad"
-            value={formData.edad}
-            onChange={handleChange}
-            readOnly
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Nacionalidad</label>
-          <select
-            name="id_nacionalidad"
-            value={formData.id_nacionalidad}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Seleccione nacionalidad</option>
-            {options.nacionalidades.map(n => (
-              <option key={n.id_nacionalidad} value={n.id_nacionalidad}>
-                {n.nombre} ({n.codigo_iso})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Sexo</label>
-          <select
-            name="id_sexo"
-            value={formData.id_sexo}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Seleccione sexo</option>
-            {options.sexos.map(s => (
-              <option key={s.id_sexo} value={s.id_sexo}>
-                {s.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <button type="submit" className="submit-btn">
-          Guardar Cambios
-        </button>
       </form>
     </div>
   );

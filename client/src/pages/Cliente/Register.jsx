@@ -29,14 +29,14 @@ const Register = () => {
     }
 
     try {
-      const res = await axios.post('http://localhost:3001/api/auth/register', {
+      const res = await axios.post('http://20.83.162.99:3001/api/auth/register', {
         nombre: formData.nombre,
         correo: formData.correo,
         contrasena: formData.contrasena
       });
 
-      setMensaje(res.data.message || '✅ Registro exitoso. Revisa tu correo.');
-      setTimeout(() => navigate('/login'), 3000);
+      setMensaje(res.data.message || '✅ Registro exitoso. Revisa tu correo para verificarlo.');
+      setTimeout(() => navigate('/login'), 4000);
     } catch (err) {
       console.error(err);
       setMensaje(err.response?.data?.message || '❌ Error al registrar');

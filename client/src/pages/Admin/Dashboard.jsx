@@ -25,7 +25,7 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/reservas/estadisticas')
+    fetch('http://20.83.162.99:3001/api/reservas/estadisticas')
       .then(res => res.json())
       .then(data => {
         console.log('Respuesta API reservas:', data);

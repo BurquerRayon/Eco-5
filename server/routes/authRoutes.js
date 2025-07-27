@@ -219,14 +219,14 @@ router.get('/verify', async (req, res) => {
   try {
     await poolConnect;
 
-    // Consulta modificada para verificar el tiempo de expiración (90 segundos)
+    // Consulta modificada para verificar el tiempo de expiración (600 segundos)
     const result = await pool.request()
       .input('token', token)
       .query(`
         SELECT * FROM Verificacion
         WHERE token = @token 
         AND usado = 0
-        AND DATEDIFF(SECOND, fecha_envio, GETDATE()) <= 180
+        AND DATEDIFF(SECOND, fecha_envio, GETDATE()) <= 600
       `);
 
     if (result.recordset.length === 0) {

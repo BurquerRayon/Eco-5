@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import useSocket from '../../hooks/useSocket';
 import '../../styles/ReservaCliente.css';
 import ClientePago from '../Cliente/ClientePago';
 import DisponibilidadHorarios from '../../components/DisponibilidadHorarios';
@@ -28,6 +29,7 @@ const ReservaCliente = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const id_turista = user?.id_turista;
   const navigate = useNavigate();
+  const { on, off } = useSocket();
 
   // Función para formatear hora
   const formatearHora = (horaObj) => {
@@ -91,6 +93,26 @@ const ReservaCliente = () => {
 
     cargarDatosIniciales();
   }, [id_turista]);
+
+  // Escuchar eventos Socket.IO para actualizar historial en tiempo real
+  useEffect(() => {
+    const handleReservaChange = (data) => {
+      // Solo actualizar si es del usuario actual
+      if (id_turista && data) {
+        cargarHistorial();
+      }
+    };
+
+    on('reserva_creada', handleReservaChange);
+    on('reserva_actualizada', handleReservaChange);
+    on('reserva_cancelada', handleReservaChange);
+
+    return () => {
+      off('reserva_creada', handleReservaChange);
+      off('reserva_actualizada', handleReservaChange);
+      off('reserva_cancelada', handleReservaChange);
+    };
+  }, [id_turista, on, off]);
 
   // Aplicar filtros al historial
   useEffect(() => {

@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
 
 // ✅ Rutas
 const rolesRoutes = require('./routes/rolesRoutes');
@@ -21,10 +23,29 @@ const pagosRoutes = require('./routes/pagosRoutes');
 const { poolConnect, pool } = require('./db/connection');
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 
 // ✅ Middleware
 app.use(cors());
 app.use(express.json());
+
+// ✅ Socket.IO connection
+io.on('connection', (socket) => {
+  console.log('Usuario conectado:', socket.id);
+  
+  socket.on('disconnect', () => {
+    console.log('Usuario desconectado:', socket.id);
+  });
+});
+
+// Hacer io disponible globalmente
+global.io = io;
 
 // ✅ Rutas principales
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -46,6 +67,6 @@ app.use('/api/pagos', pagosRoutes);
 
 // ✅ Inicio del servidor
 const PORT = 3001;
-app.listen(3001, '0.0.0.0', () => {
+server.listen(3001, '0.0.0.0', () => {
   console.log('Servidor corriendo en puerto 3001');
 });

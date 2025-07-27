@@ -11,6 +11,7 @@ import {
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import axios from "axios";
+import useSocket from "../../hooks/useSocket";
 import "../../styles/HomeClient.css";
 import { useNavigate } from "react-router-dom";
 /**/
@@ -21,13 +22,35 @@ const HomeClient = () => {
   const { user } = useAuth();
   const [atraccionesData, setAtraccionesData] = useState([]);
   const navigate = useNavigate();
+  const { on, off } = useSocket();
 
-  useEffect(() => {
+  const cargarEstadisticas = () => {
     axios
       .get("http://20.83.162.99:3001/api/admin/stats")
       .then((res) => setAtraccionesData(res.data.reservasPorAtraccion || []))
       .catch((err) => console.error("Error al cargar datos:", err));
+  };
+
+  useEffect(() => {
+    cargarEstadisticas();
   }, []);
+
+  useEffect(() => {
+    // Escuchar eventos de cambios en reservas para actualizar estadísticas
+    const handleStatsUpdate = () => {
+      cargarEstadisticas();
+    };
+
+    on('reserva_creada', handleStatsUpdate);
+    on('reserva_actualizada', handleStatsUpdate);
+    on('reserva_cancelada', handleStatsUpdate);
+
+    return () => {
+      off('reserva_creada', handleStatsUpdate);
+      off('reserva_actualizada', handleStatsUpdate);
+      off('reserva_cancelada', handleStatsUpdate);
+    };
+  }, [on, off]);
 
   const chartData = {
     labels: atraccionesData.map((item) => item.atraccion),
