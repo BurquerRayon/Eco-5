@@ -35,6 +35,66 @@ function pickHabitat(rawHabitat) {
   return HABITAT_MAP[n] || rawHabitat; // si no está en el mapa, deja el original
 }
 
+// En especimen.js, antes de las rutas existentes
+
+// POST /api/especimenes/habitats - Crear nuevo hábitat
+router.post('/habitats', async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    
+    // Verificar si ya existe
+    const existe = await pool.request()
+      .input('nombre', sql.NVarChar(100), nombre)
+      .query('SELECT id_habitat FROM Habitat WHERE nombre = @nombre');
+      
+    if (existe.recordset.length > 0) {
+      return res.status(409).json({ 
+        error: 'El hábitat ya existe',
+        id_habitat: existe.recordset[0].id_habitat
+      });
+    }
+    
+    // Crear nuevo hábitat
+    const result = await pool.request()
+      .input('nombre', sql.NVarChar(100), nombre)
+      .input('descripcion', sql.NVarChar(sql.MAX), '')
+      .input('ubicacion', sql.NVarChar(200), '')
+      .query(`
+        INSERT INTO Habitat (nombre, descripcion, ubicacion)
+        OUTPUT INSERTED.id_habitat
+        VALUES (@nombre, @descripcion, @ubicacion)
+      `);
+      
+    res.status(201).json({
+      mensaje: 'Hábitat creado con éxito',
+      id_habitat: result.recordset[0].id_habitat
+    });
+  } catch (error) {
+    console.error('Error al crear hábitat:', error);
+    res.status(500).json({ error: 'Error al crear hábitat' });
+  }
+});
+
+// GET /api/especimenes/habitats - Listar hábitats
+router.get('/habitats', async (req, res) => {
+  try {
+    const { nombre } = req.query;
+    let query = 'SELECT * FROM Habitat';
+    let request = pool.request();
+    
+    if (nombre) {
+      query += ' WHERE nombre = @nombre';
+      request.input('nombre', sql.NVarChar(100), nombre);
+    }
+    
+    const result = await request.query(query);
+    res.json(result.recordset);
+  } catch (error) {
+    console.error('Error al obtener hábitats:', error);
+    res.status(500).json({ error: 'Error al obtener hábitats' });
+  }
+});
+
 // ------------------------------------------------------
 // GET /api/especimenes
 // Devuelve todas las fichas para el front-end
@@ -69,6 +129,69 @@ router.get("/", async (req, res) => {
 // POST /api/especimenes/cargar
 // Inserta múltiples fichas enviadas en el body (array)
 // ------------------------------------------------------
+
+router.post("/cargar", async (req, res) => {
+  try {
+    await poolConnect;
+    
+    const fichas = req.body; // Espera un array de fichas
+    
+    if (!Array.isArray(fichas)) {
+      return res.status(400).json({ error: "Se esperaba un array de fichas" });
+    }
+
+    const resultados = [];
+
+    for (const ficha of fichas) {
+      const { nombre_comun, nombre_cientifico, descripcion, id_habitat, imagen_url } = ficha;
+      
+      // Determinar tipo según hábitat
+      let tipo = "Fauna";
+      if (id_habitat == 1 || id_habitat == 3) tipo = "Fauna";
+      if (id_habitat == 2) tipo = "Flora";
+
+      // 1. Insertar el espécimen
+      const result = await pool
+        .request()
+        .input("nombre", sql.NVarChar(100), nombre_comun)
+        .input("cientifico", sql.NVarChar(150), nombre_cientifico)
+        .input("tipo", sql.NVarChar(10), tipo)
+        .input("estado", sql.NVarChar(100), "")
+        .input("observacion", sql.NVarChar(sql.MAX), descripcion)
+        .input("id_habitat", sql.Int, id_habitat).query(`
+          INSERT INTO Especimen (
+            nombre, nombre_cientifico, tipo, estado_conservacion, observacion, id_habitat
+          )
+          OUTPUT INSERTED.id_especimen
+          VALUES (@nombre, @cientifico, @tipo, @estado, @observacion, @id_habitat);
+        `);
+
+      const idEspecimen = result.recordset[0].id_especimen;
+
+      // 2. Insertar imagen si existe
+      if (imagen_url) {
+        await pool
+          .request()
+          .input("id_especimen", sql.Int, idEspecimen)
+          .input("url_imagen", sql.NVarChar(255), imagen_url)
+          .input("descripcion", sql.NVarChar(255), nombre_comun)
+          .query(`INSERT INTO Especimen_Imagen (id_especimen, url_imagen, descripcion, fecha)
+                  VALUES (@id_especimen, @url_imagen, @descripcion, GETDATE())`);
+      }
+
+      resultados.push({ id: idEspecimen, nombre: nombre_comun });
+    }
+
+    res.status(201).json({ 
+      mensaje: `${resultados.length} fichas cargadas correctamente`,
+      fichas: resultados 
+    });
+  } catch (error) {
+    console.error("Error al cargar fichas:", error);
+    res.status(500).json({ error: "Error al cargar fichas" });
+  }
+});
+
 // POST /api/especimenes
 router.post("/", upload.single("imagen"), async (req, res) => {
   try {
