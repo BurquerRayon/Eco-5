@@ -9,7 +9,7 @@ const HomeEmployee = () => {
     { nombre: "Actividad Programada", ruta: "../Employee/PersonalMantenimiento" },
 
     //TENGO QUE ADAPTAR EL BOTON DE MAPA PARA QUE VUELVA AL MENU PRINCIPAL DE EMPLEADOS
-    { nombre: "Asignar hábitats en el mapa", ruta: "/map" },
+    { nombre: "Asignar hábitats en el mapa", ruta: "/map", from: "HomeEmployee" },
     {
       nombre: "Registrar nuevas especies",
       ruta: "/gallery",

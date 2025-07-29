@@ -108,7 +108,7 @@ const HomeClient = () => {
 
         <div
           className="cliente-card"
-          onClick={() => (window.location.href = "/map")}
+          onClick={() => navigate("/map", { state: { from: "HomeClient" } })}
         >
           <FaMapMarkedAlt className="icono-card" />
           <h3>Ver Mapa</h3>

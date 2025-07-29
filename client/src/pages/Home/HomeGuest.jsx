@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/HomeGuest.css";
 import "../../styles/Carrusel.css";
 import Carrusel from "../../components/Carousel";
@@ -18,6 +19,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const HomeGuest = () => {
   const [atraccionesData, setAtraccionesData] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -76,7 +78,7 @@ const HomeGuest = () => {
           <div className="home-buttons">
             <button
               className="map-button"
-              onClick={() => (window.location.href = "/map")}
+              onClick={() => navigate("/map", { state: { from: "HomeGuest" } })}
             >
               <FaMapMarkedAlt /> Ver Mapa de Atracciones y Hábitats
             </button>

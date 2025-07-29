@@ -22,9 +22,9 @@ const Galeria = () => {
   const esEmpleado = location.state?.from === "HomeEmployee";
   const handleVolver = () => {
     if (desde === "HomeEmployee") {
-      navigate("/home/HomeEmployee");
+      navigate("/home/employee");
     } else if (desde === "HomeClient") {
-      navigate("/home/HomeClient");
+      navigate("/home/client");
     } else {
       navigate("/");
     }

@@ -42,14 +42,15 @@ CREATE TABLE Permiso (
     descripcion TEXT
 );
 
--- 6. Tabla Rol_Permiso
-CREATE TABLE Rol_Permiso (
-    id_rol INT,
-    id_permiso INT,
-    PRIMARY KEY (id_rol, id_permiso),
-    FOREIGN KEY (id_rol) REFERENCES Rol(id_rol) ON DELETE CASCADE,
-    FOREIGN KEY (id_permiso) REFERENCES Permiso(id_permiso) ON DELETE CASCADE
-);
+-- 6. Vista Rol_Permiso
+CREATE VIEW Rol_Permiso AS
+SELECT
+    r.id_rol,
+    r.nombre AS nombre_rol,
+    p.id_permiso,
+    p.nombre_permiso
+FROM Rol r
+CROSS JOIN Permiso p;
 
 -- 7. Tabla Usuario
 CREATE TABLE Usuario (

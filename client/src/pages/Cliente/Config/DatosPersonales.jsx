@@ -15,12 +15,12 @@ const DatosPersonales = () => {
     id_nacionalidad: '',
     id_sexo: ''
   });
-  
+
   const [options, setOptions] = useState({
     nacionalidades: [],
     sexos: []
   });
-  
+
   const [uiState, setUiState] = useState({
     loading: true,
     message: { text: '', type: '' }
@@ -38,7 +38,7 @@ const DatosPersonales = () => {
         }
 
         setUiState(prev => ({ ...prev, loading: true }));
-        
+
         const [userData, nacionalidades, sexos] = await Promise.all([
           axios.get(`http://20.83.162.99:3001/api/cliente/datos/${user.id_usuario}`),
           axios.get('http://20.83.162.99:3001/api/cliente/nacionalidades'),
@@ -71,7 +71,7 @@ const DatosPersonales = () => {
             type: 'error'
           }
         });
-        
+
         if (error.response?.status === 401) {
           navigate('/login');
         }
@@ -83,17 +83,17 @@ const DatosPersonales = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     if (name === 'fecha_nacimiento') {
       const birthDate = new Date(value);
       const today = new Date();
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
-      
+
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
         age--;
       }
-      
+
       setFormData(prev => ({
         ...prev,
         fecha_nacimiento: value,
@@ -106,7 +106,7 @@ const DatosPersonales = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.nombre.trim()) {
       setUiState(prev => ({
         ...prev,
@@ -125,12 +125,12 @@ const DatosPersonales = () => {
 
     try {
       setUiState(prev => ({ ...prev, message: { text: 'Guardando...', type: 'info' } }));
-      
+
       await axios.put(
         `http://20.83.162.99:3001/api/cliente/datos/${user.id_usuario}`,
         formData
       );
-      
+
       setUiState(prev => ({
         ...prev,
         message: { text: '✅ Datos actualizados', type: 'success' }
@@ -155,11 +155,11 @@ const DatosPersonales = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="datos-container">
       <h3 className="section-title">Datos Personales</h3>
-      
+
       {uiState.message.text && (
         <div className={`alert-message ${uiState.message.type}`}>
           {uiState.message.text}
@@ -264,11 +264,8 @@ const DatosPersonales = () => {
               required
             >
               <option value="">Seleccione...</option>
-              {options.sexos.map(s => (
-                <option key={s.id_sexo} value={s.id_sexo}>
-                  {s.nombre}
-                </option>
-              ))}
+              <option value="Hombre">Hombre</option>
+              <option value="Mujer">Mujer</option>
             </select>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/Map.css";
 import Footer from "../../components/Footer"; // Asegúrate de que la ruta sea correcta
 import "../../styles/Footer.css"; // si deseas estilos comunes
@@ -9,6 +9,19 @@ import "../../styles/Footer.css"; // si deseas estilos comunes
 
 const Mapa = () => {
   const mapRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleGoBack = () => {
+    const from = location.state?.from;
+    if (from === "HomeEmployee") {
+      navigate("/home/employee");
+    } else if (from === "HomeClient") {
+      navigate("/home/client");
+    } else {
+      navigate("/"); // Default to HomeGuest
+    }
+  };
 
    useEffect(() => {
     window.initMap = () => {
@@ -33,7 +46,23 @@ const Mapa = () => {
 
   return (
     <div style={{ height: '80vh', width: '100%' }}>
-      <div ref={mapRef} style={{ height: '100%', width: '100%' }}></div>
+      <div style={{ padding: '10px', backgroundColor: '#f5f5f5', borderBottom: '1px solid #ddd' }}>
+        <button 
+          onClick={handleGoBack}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}
+        >
+          ← Volver
+        </button>
+      </div>
+      <div ref={mapRef} style={{ height: 'calc(100% - 50px)', width: '100%' }}></div>
     </div>
   );
 };
