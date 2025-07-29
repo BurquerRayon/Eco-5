@@ -7,6 +7,32 @@
   --gray: #ced4da;
 }
 
+.acciones-empleado {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.btn-editar,
+.btn-eliminar {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-editar {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-eliminar {
+  background-color: #dc3545;
+  color: white;
+}
+
 /* Contenedor principal */
 .galeria-container {
   padding: 2rem;
@@ -261,6 +287,21 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+.btn-crear-ficha {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 16px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-crear-ficha:hover {
+  background-color: #45a049;
 }
 
 /* Responsive */

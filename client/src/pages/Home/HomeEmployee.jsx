@@ -6,14 +6,17 @@ const HomeEmployee = () => {
   console.log("Entrando al menú de empleados...");
   const navigate = useNavigate();
   const opciones = [
-    { nombre: "Actividad Programada", ruta: "/Employee/ReporteActividades" },
-    { nombre: "Asignar hábitats en el mapa", ruta: "/registrar" },
+    { nombre: "Actividad Programada", ruta: "../Employee/PersonalMantenimiento" },
+
+    //TENGO QUE ADAPTAR EL BOTON DE MAPA PARA QUE VUELVA AL MENU PRINCIPAL DE EMPLEADOS
+    { nombre: "Asignar hábitats en el mapa", ruta: "/map" },
     {
       nombre: "Registrar nuevas especies",
       ruta: "/gallery",
       from: "HomeEmployee",
     },
     { nombre: "Reservas de turistas", ruta: "/reportes" },
+    { nombre: "Editar Carrusell", ruta: "/Carousel" },
   ];
 
   return (

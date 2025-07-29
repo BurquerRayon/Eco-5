@@ -1,0 +1,91 @@
+.modal-editar {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px 30px;
+    max-width: 600px;
+    width: 90%;
+    z-index: 1001; /* alto para asegurar visibilidad */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    font-family: Arial, sans-serif;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  .modal-editar h2 {
+    margin-bottom: 20px;
+    font-weight: 700;
+    color: #0b3d91;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: vertical;
+  }
+  
+  .form-group textarea {
+    min-height: 80px;
+    max-height: 150px;
+  }
+  
+  .buttons-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .buttons-container button {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .buttons-container .btn-guardar {
+    background-color: #4caf50;
+  }
+  
+  .buttons-container .btn-guardar:hover {
+    background-color: #45a049;
+  }
+  
+  .buttons-container .btn-cancelar {
+    background-color: #f44336;
+  }
+  
+  .buttons-container .btn-cancelar:hover {
+    background-color: #d32f2f;
+  }
+  

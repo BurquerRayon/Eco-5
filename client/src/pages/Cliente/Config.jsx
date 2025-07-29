@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import '../../styles/ClientConfig.css';
 import DatosPersonales from '../Cliente/Config/DatosPersonales';
-//import ContactoForm from '../Cliente/Config/ContactoForm';
 import BancariaForm from '../Cliente/Config/BancariaForm';
 import DocumentosForm from '../Cliente/Config/DocumentosForm';
+import SeguridadForm from '../Cliente/Config/SeguridadForm';
+import PreferenciasForm from '../Cliente/Config/PreferenciasForm';
 import { Link } from 'react-router-dom';
 
 const ClienteAjustes = () => {
@@ -31,10 +32,10 @@ const ClienteAjustes = () => {
         </button>
         
         <button
-          className={`ajuste-card ${formularioActivo === 'contacto' ? 'active' : ''}`}
-          onClick={() => manejarSeleccion('contacto')}
+          className={`ajuste-card ${formularioActivo === 'seguridad' ? 'active' : ''}`}
+          onClick={() => manejarSeleccion('seguridad')}
         >
-          Información de Contacto
+          Seguridad de la Cuenta
         </button>
         
         <button
@@ -50,6 +51,13 @@ const ClienteAjustes = () => {
         >
           Documentos Personales
         </button>
+
+        <button
+          className={`ajuste-card ${formularioActivo === 'preferencias' ? 'active' : ''}`}
+          onClick={() => manejarSeleccion('preferencias')}
+        >
+          Preferencias
+        </button>
       </div>
 
       <div className="formulario-render">
@@ -63,10 +71,10 @@ const ClienteAjustes = () => {
             </button>
 
             {formularioActivo === 'datos' && <DatosPersonales />}
-            {/* Aquí puedes agregar los otros formularios */}
-            {/* {formularioActivo === 'contacto' && <ContactoForm />} */}
+            {formularioActivo === 'seguridad' && <SeguridadForm />}
             {formularioActivo === 'bancaria' && <BancariaForm />}
             {formularioActivo === 'documentos' && <DocumentosForm />}
+            {formularioActivo === 'preferencias' && <PreferenciasForm />}
           </>
         )}
       </div>

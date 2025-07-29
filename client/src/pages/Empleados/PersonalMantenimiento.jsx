@@ -78,6 +78,10 @@ const PersonalMantenimiento = () => {
   return (
     <div className="mantenimiento-container">
       <h2>Programar Actividades de Mantenimiento</h2>
+      
+      <button onClick={() => navigate(-1)} className="boton-volver">
+        ← Volver
+      </button>
 
       <div className="form-nueva">
         <input
