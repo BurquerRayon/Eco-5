@@ -1,11 +1,5 @@
   -- ESTRUCTURA BASE DE DATOS - EcoMaravillas
 
--- 1. Tabla Sexo
-CREATE TABLE Sexo (
-    id_sexo INT IDENTITY(1,1) PRIMARY KEY,
-    nombre NVARCHAR(100)
-);
-
 -- 2. Tabla Nacionalidad
 CREATE TABLE Nacionalidad (
     id_nacionalidad INT IDENTITY(1,1) PRIMARY KEY,
@@ -23,10 +17,10 @@ CREATE TABLE Persona (
     edad TINYINT,
     telefono VARCHAR(15),
     id_nacionalidad INT,
-    id_sexo INT,
-    FOREIGN KEY (id_nacionalidad) REFERENCES Nacionalidad(id_nacionalidad),
-    FOREIGN KEY (id_sexo) REFERENCES Sexo(id_sexo)
+    id_sexo VARCHAR(10),
+    FOREIGN KEY (id_nacionalidad) REFERENCES Nacionalidad(id_nacionalidad)
 );
+
 
 -- 4. Tabla Rol
 CREATE TABLE Rol (
@@ -315,33 +309,8 @@ JOIN Reporte_Detalle d ON r.id_reporte_detalle = d.id_reporte_detalle
 LEFT JOIN Personal p ON d.id_personal = p.id_personal;
 
 -----------------------------------------------------------------------------
--- Agregar campos faltantes a la tabla Usuario
-ALTER TABLE Usuario 
-ADD pregunta_seguridad NVARCHAR(255),
-    respuesta_seguridad NVARCHAR(255),
-    autenticacion_dos_factor BIT DEFAULT 0;
 
--- Crear tabla de Preferencias de Usuario
-CREATE TABLE Preferencias_Usuario (
-    id_preferencia INT IDENTITY(1,1) PRIMARY KEY,
-    id_usuario INT,
-    idioma VARCHAR(10) DEFAULT 'es',
-    moneda VARCHAR(10) DEFAULT 'USD',
-    notificaciones_email BIT DEFAULT 1,
-    notificaciones_sms BIT DEFAULT 0,
-    notificaciones_reservas BIT DEFAULT 1,
-    notificaciones_promociones BIT DEFAULT 0,
-    tema_oscuro BIT DEFAULT 0,
-    formato_fecha VARCHAR(20) DEFAULT 'DD/MM/YYYY',
-    fecha_creacion DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
-);
-
--- Valores dentro de las tablas
-INSERT INTO Sexo (nombre)
-VALUES
-('Hombre'),
-('Mujer');
+-- Valores basicos dentro de la tabla dentro de las tablas
 
 INSERT INTO Nacionalidad (nombre, codigo_iso)
 VALUES
