@@ -8,6 +8,7 @@ const DocumentosForm = () => {
   const [formData, setFormData] = useState({
     tipo_documento: 'cedula',
     numero_documento: '',
+    cedula: '',
     fecha_emision: '',
     fecha_expiracion: ''
   });
@@ -34,6 +35,7 @@ const DocumentosForm = () => {
           setFormData({
             tipo_documento: doc.tipo_documento || 'cedula',
             numero_documento: doc.numero_documento || '',
+            cedula: doc.cedula || '',
             fecha_emision: doc.fecha_emision?.split('T')[0] || '',
             fecha_expiracion: doc.fecha_expiracion?.split('T')[0] || ''
           });
@@ -67,9 +69,9 @@ const DocumentosForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.numero_documento || !formData.fecha_emision) {
+    if (!formData.numero_documento || !formData.fecha_emision || !formData.cedula) {
       setMensaje({
-        text: '❌ Número de documento y fecha de emisión son requeridos',
+        text: '❌ Número de documento, cédula y fecha de emisión son requeridos',
         type: 'error'
       });
       return;
@@ -78,6 +80,7 @@ const DocumentosForm = () => {
     const formDataToSend = new FormData();
     formDataToSend.append('tipo_documento', formData.tipo_documento);
     formDataToSend.append('numero_documento', formData.numero_documento);
+    formDataToSend.append('cedula', formData.cedula);
     formDataToSend.append('fecha_emision', formData.fecha_emision);
     formDataToSend.append('fecha_expiracion', formData.fecha_expiracion || '');
 
@@ -144,6 +147,7 @@ const DocumentosForm = () => {
           <div className="documento-info">
             <p><strong>Tipo:</strong> {documentoExistente.tipo_documento}</p>
             <p><strong>Número:</strong> {documentoExistente.numero_documento}</p>
+            <p><strong>Cédula:</strong> {documentoExistente.cedula}</p>
             <p><strong>Fecha Emisión:</strong> {new Date(documentoExistente.fecha_emision).toLocaleDateString()}</p>
             {documentoExistente.fecha_expiracion && (
               <p><strong>Fecha Expiración:</strong> {new Date(documentoExistente.fecha_expiracion).toLocaleDateString()}</p>
@@ -195,6 +199,19 @@ const DocumentosForm = () => {
               type="text"
               name="numero_documento"
               value={formData.numero_documento}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label>Cédula</label>
+            <input
+              type="text"
+              name="cedula"
+              value={formData.cedula}
               onChange={handleChange}
               required
             />

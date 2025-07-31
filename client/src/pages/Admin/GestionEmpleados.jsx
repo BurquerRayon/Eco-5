@@ -29,8 +29,7 @@ const GestionEmpleados = () => {
   });
 
   const [opciones, setOpciones] = useState({
-    nacionalidades: [],
-    sexos: []
+    nacionalidades: []
   });
 
   const [errores, setErrores] = useState({});
@@ -42,16 +41,14 @@ const GestionEmpleados = () => {
   const cargarDatos = async () => {
     try {
       setLoading(true);
-      const [empleadosRes, nacionalidadesRes, sexosRes] = await Promise.all([
+      const [empleadosRes, nacionalidadesRes] = await Promise.all([
         axios.get('http://20.83.162.99:3001/api/empleados'),
-        axios.get('http://20.83.162.99:3001/api/nacionalidades'),
-        axios.get('http://20.83.162.99:3001/api/cliente/sexos')
+        axios.get('http://20.83.162.99:3001/api/nacionalidades')
       ]);
 
       setEmpleados(empleadosRes.data);
       setOpciones({
-        nacionalidades: nacionalidadesRes.data,
-        sexos: sexosRes.data
+        nacionalidades: nacionalidadesRes.data
       });
     } catch (error) {
       console.error('Error cargando datos:', error);
@@ -382,11 +379,8 @@ const GestionEmpleados = () => {
                       onChange={handleChange}
                     >
                       <option value="">Seleccionar...</option>
-                      {opciones.sexos.map(sexo => (
-                        <option key={sexo.id_sexo} value={sexo.id_sexo}>
-                          {sexo.nombre}
-                        </option>
-                      ))}
+                      <option value="Hombre">Hombre</option>
+                      <option value="Mujer">Mujer</option>
                     </select>
                   </div>
                 </div>

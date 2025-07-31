@@ -35,11 +35,10 @@ router.get('/datos/:id_usuario', async (req, res) => {
       .input('id_usuario', id_usuario)
       .query(`
         SELECT P.id_persona, P.nombre, P.apellido, P.cedula, P.fecha_nacimiento, P.edad, P.telefono,
-               P.id_nacionalidad, P.id_sexo, N.nombre as nacionalidad, S.nombre as sexo
+               P.id_nacionalidad, P.id_sexo as Sexo, N.nombre as nacionalidad
         FROM Usuario U
         JOIN Persona P ON U.id_persona = P.id_persona
         LEFT JOIN Nacionalidad N ON P.id_nacionalidad = N.id_nacionalidad
-        LEFT JOIN Sexo S ON P.id_sexo = S.id_sexo
         WHERE U.id_usuario = @id_usuario
       `);
     if (result.recordset.length === 0) {
@@ -118,25 +117,6 @@ router.get('/nacionalidades', async (req, res) => {
     console.error('Error al obtener nacionalidades:', err);
     res.status(500).json({ 
       message: 'Error al obtener nacionalidades',
-      error: err.message // Envía el mensaje de error
-    });
-  }
-});
-
-router.get('/sexos', async (req, res) => {
-  try {
-    await poolConnect;
-    const result = await pool.request().query(`
-      SELECT id_sexo, nombre 
-      FROM Sexo
-      ORDER BY nombre
-    `);
-    console.log('Sexos desde DB:', result.recordset); // Debug
-    res.json(result.recordset);
-  } catch (err) {
-    console.error('Error al obtener sexos:', err);
-    res.status(500).json({ 
-      message: 'Error al obtener sexos',
       error: err.message // Envía el mensaje de error
     });
   }
@@ -240,13 +220,11 @@ router.get('/', async (req, res) => {
         P.fecha_nacimiento,
         P.telefono,
         P.id_nacionalidad,
-        P.id_sexo,
-        N.nombre as nacionalidad,
-        S.nombre as sexo
+        P.id_sexo as sexo,
+        N.nombre as nacionalidad
       FROM Usuario U
       JOIN Persona P ON U.id_persona = P.id_persona
       LEFT JOIN Nacionalidad N ON P.id_nacionalidad = N.id_nacionalidad
-      LEFT JOIN Sexo S ON P.id_sexo = S.id_sexo
       WHERE U.id_rol = 3
       ORDER BY P.nombre, P.apellido
     `);

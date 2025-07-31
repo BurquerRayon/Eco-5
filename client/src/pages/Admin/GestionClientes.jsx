@@ -26,8 +26,7 @@ const GestionClientes = () => {
   });
 
   const [opciones, setOpciones] = useState({
-    nacionalidades: [],
-    sexos: []
+    nacionalidades: []
   });
 
   const [errores, setErrores] = useState({});
@@ -39,16 +38,14 @@ const GestionClientes = () => {
   const cargarDatos = async () => {
     try {
       setLoading(true);
-      const [clientesRes, nacionalidadesRes, sexosRes] = await Promise.all([
+      const [clientesRes, nacionalidadesRes] = await Promise.all([
         axios.get('http://20.83.162.99:3001/api/cliente'),
-        axios.get('http://20.83.162.99:3001/api/nacionalidades'),
-        axios.get('http://20.83.162.99:3001/api/cliente/sexos')
+        axios.get('http://20.83.162.99:3001/api/nacionalidades')
       ]);
 
       setClientes(clientesRes.data);
       setOpciones({
-        nacionalidades: nacionalidadesRes.data,
-        sexos: sexosRes.data
+        nacionalidades: nacionalidadesRes.data
       });
     } catch (error) {
       console.error('Error cargando datos:', error);
@@ -356,11 +353,8 @@ const GestionClientes = () => {
                     onChange={handleChange}
                   >
                     <option value="">Seleccionar...</option>
-                    {opciones.sexos.map(sexo => (
-                      <option key={sexo.id_sexo} value={sexo.id_sexo}>
-                        {sexo.nombre}
-                      </option>
-                    ))}
+                    <option value="Hombre">Hombre</option>
+                    <option value="Mujer">Mujer</option>
                   </select>
                 </div>
               </div>

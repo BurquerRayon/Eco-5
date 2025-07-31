@@ -17,8 +17,7 @@ const DatosPersonales = () => {
   });
 
   const [options, setOptions] = useState({
-    nacionalidades: [],
-    sexos: []
+    nacionalidades: []
   });
 
   const [uiState, setUiState] = useState({
@@ -39,10 +38,9 @@ const DatosPersonales = () => {
 
         setUiState(prev => ({ ...prev, loading: true }));
 
-        const [userData, nacionalidades, sexos] = await Promise.all([
+        const [userData, nacionalidades] = await Promise.all([
           axios.get(`http://20.83.162.99:3001/api/cliente/datos/${user.id_usuario}`),
-          axios.get('http://20.83.162.99:3001/api/cliente/nacionalidades'),
-          axios.get('http://20.83.162.99:3001/api/cliente/sexos')
+          axios.get('http://20.83.162.99:3001/api/cliente/nacionalidades')
         ]);
 
         setFormData({
@@ -57,8 +55,7 @@ const DatosPersonales = () => {
         });
 
         setOptions({
-          nacionalidades: nacionalidades.data || [],
-          sexos: sexos.data || []
+          nacionalidades: nacionalidades.data || []
         });
 
         setUiState({ loading: false, message: { text: '', type: '' } });
