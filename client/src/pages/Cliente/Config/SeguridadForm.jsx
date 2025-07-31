@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../../context/AuthContext';
 import '../../../styles/SeguridadForm.css';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons
 
 const SeguridadForm = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +10,7 @@ const SeguridadForm = () => {
     contrasenaNueva: '',
     confirmarContrasena: ''
   });
-  
+
   const [configuracion, setConfiguracion] = useState({
     notificacionesEmail: true,
     autenticacionDosFactor: false,
@@ -19,6 +19,11 @@ const SeguridadForm = () => {
 
   const [mensaje, setMensaje] = useState({ text: '', type: '' });
   const [cargando, setCargando] = useState(false);
+  const [showPasswords, setShowPasswords] = useState({
+    contrasenaActual: false,
+    contrasenaNueva: false,
+    confirmarContrasena: false
+  }); // State for toggling visibility of each password field
   const { user } = useAuth();
 
   const handlePasswordChange = (e) => {
@@ -26,15 +31,22 @@ const SeguridadForm = () => {
   };
 
   const handleConfigChange = (e) => {
-    setConfiguracion({ 
-      ...configuracion, 
-      [e.target.name]: e.target.checked 
+    setConfiguracion({
+      ...configuracion,
+      [e.target.name]: e.target.checked
     });
+  };
+
+  const togglePasswordVisibility = (field) => {
+    setShowPasswords((prev) => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
   };
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (formData.contrasenaNueva !== formData.confirmarContrasena) {
       setMensaje({ text: '❌ Las contraseñas no coinciden', type: 'error' });
       return;
@@ -51,135 +63,166 @@ const SeguridadForm = () => {
         contrasenaActual: formData.contrasenaActual,
         contrasenaNueva: formData.contrasenaNueva
       });
-      
+
       setMensaje({ text: '✅ Contraseña actualizada correctamente', type: 'success' });
       setFormData({ contrasenaActual: '', contrasenaNueva: '', confirmarContrasena: '' });
     } catch (error) {
-      setMensaje({ 
-        text: error.response?.data?.message || '❌ Error al cambiar contraseña', 
-        type: 'error' 
+      setMensaje({
+        text: error.response?.data?.message || '❌ Error al cambiar contraseña',
+        type: 'error'
       });
     } finally {
       setCargando(false);
     }
-    
+
     setTimeout(() => setMensaje({ text: '', type: '' }), 3000);
   };
 
   const handleConfigSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setCargando(true);
       await axios.put(`http://20.83.162.99:3001/api/cliente/configuracion-seguridad/${user.id_usuario}`, configuracion);
       setMensaje({ text: '✅ Configuración de seguridad actualizada', type: 'success' });
     } catch (error) {
-      setMensaje({ 
-        text: error.response?.data?.message || '❌ Error al actualizar configuración', 
-        type: 'error' 
+      setMensaje({
+        text: error.response?.data?.message || '❌ Error al actualizar configuración',
+        type: 'error'
       });
     } finally {
       setCargando(false);
     }
-    
+
     setTimeout(() => setMensaje({ text: '', type: '' }), 3000);
   };
 
   return (
-    <div className="seguridad-container">
-      <h3 className="section-title">Seguridad de la Cuenta</h3>
-      
+    <div className="security-form-container">
+      <h3 className="security-form-title">Seguridad de la Cuenta</h3>
+
       {mensaje.text && (
-        <div className={`alert-message ${mensaje.type}`}>
+        <div className={`security-alert security-alert-${mensaje.type}`}>
           {mensaje.text}
         </div>
       )}
 
       {/* Cambio de Contraseña */}
-      <div className="security-section">
-        <h4>Cambiar Contraseña</h4>
-        <form onSubmit={handlePasswordSubmit} className="password-form">
-          <div className="form-group">
-            <label>Contraseña Actual</label>
-            <input
-              type="password"
-              name="contrasenaActual"
-              value={formData.contrasenaActual}
-              onChange={handlePasswordChange}
-              required
-            />
+      <div className="security-form-section">
+        <h4 className="security-form-section-title">Cambiar Contraseña</h4>
+        <form onSubmit={handlePasswordSubmit} className="security-form">
+          
+        <div className="security-form-group">
+        <label className="security-form-label">Contraseña Actual</label>
+        <div className="password-input-container">
+          <input
+            type={showPasswords.contrasenaActual ? 'text' : 'password'}
+            className="security-form-input"
+            name="contrasenaActual"
+            value={formData.contrasenaActual}
+            onChange={handlePasswordChange}
+            required
+          />
+          <span
+            className="password-toggle-icon"
+            onClick={() => togglePasswordVisibility('contrasenaActual')}
+          >
+            {showPasswords.contrasenaActual ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
+      </div>
+
+          <div className="security-form-group">
+            <label className="security-form-label">Nueva Contraseña</label>
+            <div className="password-input-container">
+              <input
+                type={showPasswords.contrasenaNueva ? 'text' : 'password'}
+                className="security-form-input"
+                name="contrasenaNueva"
+                value={formData.contrasenaNueva}
+                onChange={handlePasswordChange}
+                required
+                minLength="8"
+              />
+              <span
+                className="password-toggle-icon"
+                onClick={() => togglePasswordVisibility('contrasenaNueva')}
+              >
+                {showPasswords.contrasenaNueva ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Nueva Contraseña</label>
-            <input
-              type="password"
-              name="contrasenaNueva"
-              value={formData.contrasenaNueva}
-              onChange={handlePasswordChange}
-              required
-              minLength="8"
-            />
+          <div className="security-form-group">
+            <label className="security-form-label">Confirmar Nueva Contraseña</label>
+            <div className="password-input-container">
+              <input
+                type={showPasswords.confirmarContrasena ? 'text' : 'password'}
+                className="security-form-input"
+                name="confirmarContrasena"
+                value={formData.confirmarContrasena}
+                onChange={handlePasswordChange}
+                required
+              />
+              <span
+                className="password-toggle-icon"
+                onClick={() => togglePasswordVisibility('confirmarContrasena')}
+              >
+                {showPasswords.confirmarContrasena ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Confirmar Nueva Contraseña</label>
-            <input
-              type="password"
-              name="confirmarContrasena"
-              value={formData.confirmarContrasena}
-              onChange={handlePasswordChange}
-              required
-            />
-          </div>
-
-          <button type="submit" className="save-btn" disabled={cargando}>
+          <button type="submit" className="security-form-btn" disabled={cargando}>
             {cargando ? 'Cambiando...' : 'Cambiar Contraseña'}
           </button>
         </form>
       </div>
 
       {/* Configuración de Seguridad */}
-      <div className="security-section">
-        <h4>Configuración de Seguridad</h4>
-        <form onSubmit={handleConfigSubmit} className="config-form">
-          <div className="checkbox-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                name="notificacionesEmail"
-                checked={configuracion.notificacionesEmail}
-                onChange={handleConfigChange}
-              />
-              <span>Recibir notificaciones de seguridad por email</span>
-            </label>
+      <div className="security-form-section">
+        <h4 className="security-form-section-title">Configuración de Seguridad</h4>
+        <form onSubmit={handleConfigSubmit} className="security-form">
+          <div className="security-checkbox-container">
+            <input
+              type="checkbox"
+              className="security-checkbox"
+              name="notificacionesEmail"
+              checked={configuracion.notificacionesEmail}
+              onChange={handleConfigChange}
+            />
+            <span className="security-checkbox-label">
+              Recibir notificaciones de seguridad por email
+            </span>
           </div>
 
-          <div className="checkbox-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                name="autenticacionDosFactor"
-                checked={configuracion.autenticacionDosFactor}
-                onChange={handleConfigChange}
-              />
-              <span>Habilitar autenticación de dos factores (próximamente)</span>
-            </label>
+          <div className="security-checkbox-container">
+            <input
+              type="checkbox"
+              className="security-checkbox"
+              name="autenticacionDosFactor"
+              checked={configuracion.autenticacionDosFactor}
+              onChange={handleConfigChange}
+            />
+            <span className="security-checkbox-label">
+              Habilitar autenticación de dos factores (próximamente)
+            </span>
           </div>
 
-          <div className="checkbox-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                name="sesionSegura"
-                checked={configuracion.sesionSegura}
-                onChange={handleConfigChange}
-              />
-              <span>Cerrar sesión automáticamente por inactividad</span>
-            </label>
+          <div className="security-checkbox-container">
+            <input
+              type="checkbox"
+              className="security-checkbox"
+              name="sesionSegura"
+              checked={configuracion.sesionSegura}
+              onChange={handleConfigChange}
+            />
+            <span className="security-checkbox-label">
+              Cerrar sesión automáticamente por inactividad
+            </span>
           </div>
 
-          <button type="submit" className="save-btn" disabled={cargando}>
+          <button type="submit" className="security-form-btn" disabled={cargando}>
             {cargando ? 'Guardando...' : 'Guardar Configuración'}
           </button>
         </form>

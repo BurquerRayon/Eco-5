@@ -5,6 +5,7 @@ const sql = require('mssql');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const bcrypt = require('bcrypt');
 
 // Configuración de Multer para almacenar imágenes
 const storage = multer.diskStorage({
