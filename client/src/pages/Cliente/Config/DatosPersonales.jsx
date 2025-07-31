@@ -8,10 +8,8 @@ const DatosPersonales = () => {
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
-    cedula: '',
-    fecha_nacimiento: '',
-    edad: '',
     telefono: '',
+    fecha_nacimiento: '',
     id_nacionalidad: '',
     id_sexo: ''
   });
@@ -46,10 +44,8 @@ const DatosPersonales = () => {
         setFormData({
           nombre: userData.data.nombre || '',
           apellido: userData.data.apellido || '',
-          cedula: userData.data.cedula || '',
-          fecha_nacimiento: userData.data.fecha_nacimiento?.split('T')[0] || '',
-          edad: userData.data.edad || '',
           telefono: userData.data.telefono || '',
+          fecha_nacimiento: userData.data.fecha_nacimiento?.split('T')[0] || '',
           id_nacionalidad: userData.data.id_nacionalidad || '',
           id_sexo: userData.data.id_sexo || ''
         });
@@ -80,25 +76,7 @@ const DatosPersonales = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === 'fecha_nacimiento') {
-      const birthDate = new Date(value);
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-
-      setFormData(prev => ({
-        ...prev,
-        fecha_nacimiento: value,
-        edad: age > 0 ? age : ''
-      }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -108,14 +86,6 @@ const DatosPersonales = () => {
       setUiState(prev => ({
         ...prev,
         message: { text: '❌ El nombre es requerido', type: 'error' }
-      }));
-      return;
-    }
-
-    if (formData.cedula && formData.cedula.length < 11) {
-      setUiState(prev => ({
-        ...prev,
-        message: { text: '❌ La cédula debe tener al menos 11 dígitos', type: 'error' }
       }));
       return;
     }
@@ -163,116 +133,90 @@ const DatosPersonales = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="quad-column-form">
-        {/* Primera fila de 4 bloques */}
-        <div className="form-row">
-          <div className="form-block">
-            <label>Nombre</label>
-            <input
-              type="text"
-              name="nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-              required
-            />
-          </div>
+<form onSubmit={handleSubmit} className="row-form">
+  {/* Fila 1 */}
+  <div className="form-block">
+    <label>Nombre</label>
+    <input
+      type="text"
+      name="nombre"
+      value={formData.nombre}
+      onChange={handleChange}
+      required
+    />
+  </div>
 
-          <div className="form-block">
-            <label>Apellido</label>
-            <input
-              type="text"
-              name="apellido"
-              value={formData.apellido}
-              onChange={handleChange}
-              required
-            />
-          </div>
+  <div className="form-block">
+    <label>Apellido</label>
+    <input
+      type="text"
+      name="apellido"
+      value={formData.apellido}
+      onChange={handleChange}
+      required
+    />
+  </div>
 
-          <div className="form-block">
-            <label>Cédula</label>
-            <input
-              type="text"
-              name="cedula"
-              value={formData.cedula}
-              onChange={handleChange}
-              required
-            />
-          </div>
+  <div className="form-block">
+    <label>Teléfono</label>
+    <input
+      type="tel"
+      name="telefono"
+      value={formData.telefono}
+      onChange={handleChange}
+      required
+    />
+  </div>
 
-          <div className="form-block">
-            <label>Teléfono</label>
-            <input
-              type="tel"
-              name="telefono"
-              value={formData.telefono}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        </div>
+  {/* Fila 2 */}
+  <div className="form-block">
+    <label>Fecha Nacimiento</label>
+    <input
+      type="date"
+      name="fecha_nacimiento"
+      value={formData.fecha_nacimiento}
+      onChange={handleChange}
+      required
+    />
+  </div>
 
-        {/* Segunda fila de 4 bloques */}
-        <div className="form-row">
-          <div className="form-block">
-            <label>Fecha Nacimiento</label>
-            <input
-              type="date"
-              name="fecha_nacimiento"
-              value={formData.fecha_nacimiento}
-              onChange={handleChange}
-              required
-            />
-          </div>
+  <div className="form-block">
+    <label>Nacionalidad</label>
+    <select
+      name="id_nacionalidad"
+      value={formData.id_nacionalidad}
+      onChange={handleChange}
+      required
+    >
+      <option value="">Seleccione...</option>
+      {options.nacionalidades.map(n => (
+        <option key={n.id_nacionalidad} value={n.id_nacionalidad}>
+          {n.nombre} ({n.codigo_iso})
+        </option>
+      ))}
+    </select>
+  </div>
 
-          <div className="form-block">
-            <label>Edad</label>
-            <input
-              type="number"
-              name="edad"
-              value={formData.edad}
-              onChange={handleChange}
-              readOnly
-            />
-          </div>
+  <div className="form-block">
+    <label>Sexo</label>
+    <select
+      name="id_sexo"
+      value={formData.id_sexo}
+      onChange={handleChange}
+      required
+    >
+      <option value="">Seleccione...</option>
+      <option value="Hombre">Hombre</option>
+      <option value="Mujer">Mujer</option>
+    </select>
+  </div>
 
-          <div className="form-block">
-            <label>Nacionalidad</label>
-            <select
-              name="id_nacionalidad"
-              value={formData.id_nacionalidad}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Seleccione...</option>
-              {options.nacionalidades.map(n => (
-                <option key={n.id_nacionalidad} value={n.id_nacionalidad}>
-                  {n.nombre} ({n.codigo_iso})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-block">
-            <label>Sexo</label>
-            <select
-              name="id_sexo"
-              value={formData.id_sexo}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Seleccione...</option>
-              <option value="Hombre">Hombre</option>
-              <option value="Mujer">Mujer</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="form-actions">
-          <button type="submit" className="save-btn">
-            Guardar Cambios
-          </button>
-        </div>
-      </form>
+  <div className="form-actions" style={{gridColumn: '1 / -1'}}>
+    <button type="submit" className="save-btn">
+      Guardar Cambios
+    </button>
+  </div>
+</form>
     </div>
   );
 };

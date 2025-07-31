@@ -440,9 +440,12 @@ router.get('/documentos/:id_usuario', async (req, res) => {
           CONVERT(varchar, d.fecha_expiracion, 23) as fecha_expiracion,
           t.nombre AS tipo_documento,
           t.foto_frontal_documento,
-          t.foto_reverso_documento
+          t.foto_reverso_documento,
+          p.cedula
         FROM Turista_Documentos d
         JOIN Tipo_Documentos t ON d.id_tipo_documento = t.id_tipo_documento
+        JOIN Usuario u ON d.id_usuario = u.id_usuario
+        JOIN Persona p ON u.id_persona = p.id_persona
         WHERE d.id_usuario = @id_usuario
       `);
 
@@ -477,12 +480,11 @@ router.post('/documentos/:id_usuario', upload.fields([
   { name: 'foto_reverso', maxCount: 1 }
 ]), async (req, res) => {
   const { id_usuario } = req.params;
-  const { tipo_documento, numero_documento, fecha_emision, fecha_expiracion } = req.body;
+  const { tipo_documento, numero_documento, cedula, fecha_emision, fecha_expiracion } = req.body;
   const files = req.files;
 
-  // Validación básica
-  if (!tipo_documento || !numero_documento || !fecha_emision) {
-    // Limpiar archivos subidos si hay error de validación
+  // Validación dinámica según el tipo de documento
+  if (!tipo_documento || !fecha_emision) {
     if (files) {
       Object.values(files).forEach(fileArray => {
         fileArray.forEach(file => {
@@ -492,7 +494,37 @@ router.post('/documentos/:id_usuario', upload.fields([
     }
     return res.status(400).json({ 
       success: false,
-      message: 'Faltan campos requeridos: tipo_documento, numero_documento, fecha_emision' 
+      message: 'Faltan campos requeridos: tipo_documento, fecha_emision' 
+    });
+  }
+
+  // Para cédula, verificar que existe el campo cedula
+  if (tipo_documento === 'cedula' && !cedula) {
+    if (files) {
+      Object.values(files).forEach(fileArray => {
+        fileArray.forEach(file => {
+          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+        });
+      });
+    }
+    return res.status(400).json({ 
+      success: false,
+      message: 'Para cédula es requerido el número de cédula' 
+    });
+  }
+
+  // Para otros documentos, verificar numero_documento
+  if (tipo_documento !== 'cedula' && !numero_documento) {
+    if (files) {
+      Object.values(files).forEach(fileArray => {
+        fileArray.forEach(file => {
+          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+        });
+      });
+    }
+    return res.status(400).json({ 
+      success: false,
+      message: 'Para este tipo de documento es requerido el número de documento' 
     });
   }
 
@@ -550,16 +582,29 @@ router.post('/documentos/:id_usuario', upload.fields([
       }
     }
 
-    // 3. Insertar o actualizar documento principal
+    // 3. Si es cédula, actualizar también en la tabla Persona
+    if (tipo_documento === 'cedula' && cedula) {
+      await transaction.request()
+        .input('id_usuario', id_usuario)
+        .input('cedula', cedula)
+        .query(`
+          UPDATE Persona SET cedula = @cedula 
+          WHERE id_persona = (SELECT id_persona FROM Usuario WHERE id_usuario = @id_usuario)
+        `);
+    }
+
+    // 4. Insertar o actualizar documento principal
     const docExists = await transaction.request()
       .input('id_usuario', id_usuario)
       .input('id_tipo', id_tipo_documento)
       .query('SELECT id_turistas_documentos FROM Turista_Documentos WHERE id_usuario = @id_usuario AND id_tipo_documento = @id_tipo');
 
+    const documentNumber = tipo_documento === 'cedula' ? cedula : numero_documento;
+
     if (docExists.recordset.length > 0) {
       await transaction.request()
         .input('id_doc', docExists.recordset[0].id_turistas_documentos)
-        .input('numero', numero_documento)
+        .input('numero', documentNumber)
         .input('emision', fecha_emision)
         .input('expiracion', fecha_expiracion || null)
         .query(`
@@ -573,7 +618,7 @@ router.post('/documentos/:id_usuario', upload.fields([
       await transaction.request()
         .input('id_usuario', id_usuario)
         .input('id_tipo', id_tipo_documento)
-        .input('numero', numero_documento)
+        .input('numero', documentNumber)
         .input('emision', fecha_emision)
         .input('expiracion', fecha_expiracion || null)
         .query(`
