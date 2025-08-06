@@ -15,15 +15,34 @@ const normalize = (str = "") =>
     .toLowerCase();
 
 // Mapas opcionales para corregir nombres comunes
+// Reemplazar el HABITAT_MAP existente con este más completo
 const HABITAT_MAP = {
   "area exterior": "Área Exterior",
   "area exterior ": "Área Exterior",
   "área exterior": "Área Exterior",
+  "area acuatica": "Área Acuática",
   "area acuática": "Área Acuática",
   "área acuática": "Área Acuática",
   "area ácuatica": "Área Acuática",
-  cueva: "Cueva",
+  "cueva": "Cueva",
+  "cuevas": "Cueva"
 };
+
+// Mejorar la función pickHabitat
+function pickHabitat(rawHabitat) {
+  if (Array.isArray(rawHabitat)) {
+    // Si es array, tomar el primer elemento no vacío
+    rawHabitat = rawHabitat.find(h => h && h.trim()) || rawHabitat[0];
+  }
+  
+  const n = rawHabitat
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+    
+  return HABITAT_MAP[n] || rawHabitat;
+}
 
 // Convierte el valor recibido (string o array) en un nombre único de hábitat
 function pickHabitat(rawHabitat) {
@@ -195,36 +214,42 @@ router.post("/cargar", async (req, res) => {
 // POST /api/especimenes
 router.post("/", upload.single("imagen"), async (req, res) => {
   try {
-    const { nombre_comun, nombre_cientifico, descripcion, id_habitat } =
-      req.body;
+    const { nombre_comun, nombre_cientifico, descripcion, id_habitat, tipo } = req.body;
     const imagen = req.file;
 
-    if (
-      !nombre_comun ||
-      !nombre_cientifico ||
-      !descripcion ||
-      !id_habitat ||
-      !imagen
-    ) {
+    // Validación mejorada
+    if (!nombre_comun || !nombre_cientifico || !descripcion || !id_habitat || !tipo || !imagen) {
       return res.status(400).json({ error: "Faltan datos obligatorios" });
     }
 
-    const idHabitatInt = parseInt(id_habitat);
-    let tipo = "Fauna";
-    if (id_habitat == 1 || id_habitat == 3) tipo = "Fauna";
-    if (id_habitat == 2) tipo = "Flora";
+    // Determinar carpeta destino según tipo
+    const carpetaDestino = tipo.toLowerCase() === 'flora' ? 'Flora' : 'Fauna';
+    const rutaCarpetaDestino = path.join(__dirname, "..", "assets", "img", carpetaDestino);
+
+    // Crear carpeta si no existe
+    if (!fs.existsSync(rutaCarpetaDestino)) {
+      fs.mkdirSync(rutaCarpetaDestino, { recursive: true });
+    }
+
+    // Mover imagen a carpeta correspondiente
+    const nombreArchivo = `${Date.now()}-${imagen.originalname}`;
+    const rutaFinal = path.join(rutaCarpetaDestino, nombreArchivo);
+    await fsp.rename(imagen.path, rutaFinal);
+
+    // Ruta relativa para BD
+    const rutaRelativa = path.join("assets", "img", carpetaDestino, nombreArchivo).replace(/\\/g, "/");
 
     await poolConnect;
 
-    // 1. Insertar el espécimen
-    const result = await pool
-      .request()
+    // Insertar espécimen
+    const result = await pool.request()
       .input("nombre", sql.NVarChar(100), nombre_comun)
       .input("cientifico", sql.NVarChar(150), nombre_cientifico)
       .input("tipo", sql.NVarChar(10), tipo)
       .input("estado", sql.NVarChar(100), "")
       .input("observacion", sql.NVarChar(sql.MAX), descripcion)
-      .input("id_habitat", sql.Int, idHabitatInt).query(`
+      .input("id_habitat", sql.Int, id_habitat)
+      .query(`
         INSERT INTO Especimen (
           nombre, nombre_cientifico, tipo, estado_conservacion, observacion, id_habitat
         )
@@ -234,36 +259,15 @@ router.post("/", upload.single("imagen"), async (req, res) => {
 
     const idEspecimen = result.recordset[0].id_especimen;
 
-    // 2. Guardar imagen en carpeta y en base de datos (como en PUT)
-    const carpetaDestino = "Flora";
-    const rutaCarpetaDestino = path.join(
-      __dirname,
-      "..",
-      "assets",
-      "img",
-      carpetaDestino
-    );
-    if (!fs.existsSync(rutaCarpetaDestino)) {
-      fs.mkdirSync(rutaCarpetaDestino, { recursive: true });
-    }
-
-    const nombreArchivo = imagen.filename;
-    const rutaTemporal = imagen.path;
-    const rutaFinal = path.join(rutaCarpetaDestino, nombreArchivo);
-
-    await fsp.rename(rutaTemporal, rutaFinal);
-
-    const rutaRelativa = path
-      .join("assets", "img", carpetaDestino, nombreArchivo)
-      .replace(/\\/g, "/");
-
-    await pool
-      .request()
+    // Insertar imagen
+    await pool.request()
       .input("id_especimen", sql.Int, idEspecimen)
       .input("url_imagen", sql.NVarChar(255), rutaRelativa)
       .input("descripcion", sql.NVarChar(255), nombre_comun)
-      .query(`INSERT INTO Especimen_Imagen (id_especimen, url_imagen, descripcion, fecha)
-              VALUES (@id_especimen, @url_imagen, @descripcion, GETDATE())`);
+      .query(`
+        INSERT INTO Especimen_Imagen (id_especimen, url_imagen, descripcion, fecha)
+        VALUES (@id_especimen, @url_imagen, @descripcion, GETDATE())
+      `);
 
     res.status(201).json({ mensaje: "Ficha creada correctamente" });
   } catch (err) {

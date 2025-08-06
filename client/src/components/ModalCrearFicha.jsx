@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../styles/ModalCrearFicha.css"; // ✅ Solo sube una carpeta
+import "../styles/ModalCrearFicha.css";
 
 const ModalCrearFicha = ({ onClose, onFichaCreada }) => {
   const [nombreComun, setNombreComun] = useState("");
   const [nombreCientifico, setNombreCientifico] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [habitat, setHabitat] = useState("");
+  const [tipo, setTipo] = useState("Fauna"); // Estado para tipo (Fauna/Flora)
   const [imagen, setImagen] = useState(null);
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState("");
@@ -21,13 +22,7 @@ const ModalCrearFicha = ({ onClose, onFichaCreada }) => {
     e.preventDefault();
     setError("");
 
-    if (
-      !nombreComun ||
-      !nombreCientifico ||
-      !descripcion ||
-      !habitat ||
-      !imagen
-    ) {
+    if (!nombreComun || !nombreCientifico || !descripcion || !habitat || !imagen) {
       setError("Todos los campos son obligatorios.");
       return;
     }
@@ -37,6 +32,7 @@ const ModalCrearFicha = ({ onClose, onFichaCreada }) => {
     formData.append("nombre_cientifico", nombreCientifico);
     formData.append("descripcion", descripcion);
     formData.append("id_habitat", habitat);
+    formData.append("tipo", tipo); // Añadir tipo al formData
     formData.append("imagen", imagen);
     formData.append("nombre_original", imagen.name);
 
@@ -85,11 +81,21 @@ const ModalCrearFicha = ({ onClose, onFichaCreada }) => {
             onChange={(e) => setDescripcion(e.target.value)}
           />
 
+          <div className="form-group">
+            <label>Tipo:</label>
+            <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+              <option value="Fauna">Fauna</option>
+              <option value="Flora">Flora</option>
+            </select>
+          </div>
+
           <select value={habitat} onChange={(e) => setHabitat(e.target.value)}>
-            <option value="">Selecciona un hábitat</option>
-            <option value="1">Cueva</option>
-            <option value="2">Área Exterior</option>
-            <option value="3">Área Acuática</option>
+            <option value="" disabled hidden>
+              Selecciona un hábitat
+            </option>
+            <option value="6">Área Exterior</option>
+            <option value="5">Área Acuática</option>
+            <option value="7">Cueva</option>
           </select>
 
           <input type="file" accept="image/*" onChange={handleImagenChange} />

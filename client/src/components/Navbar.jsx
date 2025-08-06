@@ -107,19 +107,77 @@ const Navbar = () => {
                     <li>
                       <Link to="/about">Sobre Nosotros</Link>
                     </li>
-                    <li onClick={handleLogout}>
-                      Cerrar sesión
-                    </li>
+                    <li onClick={handleLogout}>Cerrar sesión</li>
                   </>
                 )}
                 {user.rol === "empleado" && (
                   <>
+                    {/* MANTENIMIENTO */}
+                    <li
+                      style={{
+                        color: "green",
+                        fontWeight: "bold",
+                        cursor: "default",
+                      }}
+                    >
+                      Mantenimiento
+                    </li>
                     <li>
-                      <Link to="/admin/dashboard">Panel de Control</Link>
+                      <Link to="../Employee/PersonalMantenimiento">
+                        Actividades
+                      </Link>
                     </li>
-                    <li onClick={handleLogout}>
-                      Cerrar sesión
+                    <li>
+                      <Link to="/Employee/ReporteActividades">Reporte</Link>
                     </li>
+                    <li>
+                      <Link to="/map">Mapa</Link>
+                    </li>
+                    <li>
+                      <Link to="/gallery">Especies</Link>
+                    </li>
+                    <li>
+                      <Link to="/empleado/notificaciones">Notificaciones</Link>
+                    </li>
+
+                    {/* GUÍA */}
+                    <li
+                      style={{
+                        color: "green",
+                        fontWeight: "bold",
+                        cursor: "default",
+                      }}
+                    >
+                      Guía
+                    </li>
+                    <li>
+                      <Link to="/Empleados/ReservasPagadas">Ver Reservas</Link>
+                    </li>
+                    <li>
+                      <Link to="/map">Mapa Interactivo</Link>
+                    </li>
+                    <li>
+                      <Link to="/gallery">Galería de Especies</Link>
+                    </li>
+
+                    {/* CONTABLE */}
+                    <li
+                      style={{
+                        color: "green",
+                        fontWeight: "bold",
+                        cursor: "default",
+                      }}
+                    >
+                      Contable
+                    </li>
+                    <li>
+                      <Link to="/Employee/Contable">Reportes de Pago</Link>
+                    </li>
+                    <li>
+                      <Link to="/contabilidad/resumen">Resumen Financiero</Link>
+                    </li>
+
+                    <li onClick={handleLogout}>Cerrar sesión</li>
                   </>
                 )}
                 {user.rol === "admin" && (
@@ -130,9 +188,7 @@ const Navbar = () => {
                     <li>
                       <Link to="/admin/dashboard">Panel de Control</Link>
                     </li>
-                    <li onClick={handleLogout}>
-                      Cerrar sesión
-                    </li>
+                    <li onClick={handleLogout}>Cerrar sesión</li>
                   </>
                 )}
               </ul>

@@ -5,23 +5,51 @@ const fichas = require("./fichas");
 
 // Mapeo de nombres de hábitat a IDs (deben coincidir con tu BD)
 const HABITATS = {
-  "Área Exterior": 1,
-  "Área Acuática": 2,
-  "Cueva": 3
+  "Área Exterior": 5,
+  "Área Acuática": 6,
+  "Cueva": 7
 };
 
+// Añadir función de normalización mejorada
+function normalizarHabitat(nombre) {
+  const normalized = nombre
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+
+  // Mapeo de nombres alternativos a los estándar
+  const mapaAlternativos = {
+    "area exterior": "Área Exterior",
+    "area acuatica": "Área Acuática",
+    "area ácuatica": "Área Acuática",
+    "cueva": "Cueva"
+  };
+  return mapaAlternativos[normalized] || nombre;
+}
+
+// Modificar la función crearHabitatSiNoExiste
 async function crearHabitatSiNoExiste(nombre) {
+  const nombreNormalizado = normalizarHabitat(nombre);
+  
   try {
-    const response = await axios.post(`${API_URL}/habitats`, { nombre }, {
+    // Verificar si ya existe con el nombre normalizado
+    const resExistente = await axios.get(`${API_URL}/habitats?nombre=${encodeURIComponent(nombreNormalizado)}`);
+    
+    if (resExistente.data.length > 0) {
+      return resExistente.data[0].id_habitat;
+    }
+    
+    // Si no existe, crear con el nombre normalizado
+    const response = await axios.post(`${API_URL}/habitats`, { 
+      nombre: nombreNormalizado 
+    }, {
       headers: { 'Content-Type': 'application/json' }
     });
+    
     return response.data.id_habitat;
   } catch (error) {
-    if (error.response && error.response.status === 409) {
-      // El hábitat ya existe, obtener su ID
-      const res = await axios.get(`${API_URL}/habitats?nombre=${encodeURIComponent(nombre)}`);
-      return res.data[0].id_habitat;
-    }
+    console.error('Error al crear/verificar hábitat:', error);
     throw error;
   }
 }

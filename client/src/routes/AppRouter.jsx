@@ -25,6 +25,7 @@ import PersonalMantenimiento from "../pages/Empleados/PersonalMantenimiento";
 import Contable from "../pages/Empleados/Contable";
 import GuiaTuristico from "../pages/Empleados/GuiaTuristico";
 import ReporteActividades from "../pages/Empleados/ReporteActividades";
+import ReservasPagadas from "../pages/Empleados/ReservasPagadas";
 
 //admins
 import ReportesA from "../pages/Admin/ReportsAdmin";
@@ -80,6 +81,7 @@ const AppRouter = () => {
           <Route path="/Employee/ReporteActividades" element={<ReporteActividades />}/>
           <Route path="/Employee/Contable" element={<Contable />} />
           <Route path="/Employee/GuiaTuristico" element={<GuiaTuristico />} />
+          <Route path= "/Empleados/ReservasPagadas" element={<ReservasPagadas />} />
 
           {/* Rutas de administrador */}
           <Route path="/admin/config" element={<ConfigA />} />

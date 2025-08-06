@@ -12,6 +12,7 @@ const ModalEditarFicha = ({ ficha, onClose, onFichaActualizada }) => {
     tipo: ficha.tipo,
     src: ficha.src,
   });
+
   useEffect(() => {
     if (ficha) {
       setFormData({
@@ -26,7 +27,6 @@ const ModalEditarFicha = ({ ficha, onClose, onFichaActualizada }) => {
     }
   }, [ficha]);
 
-  // Para manejar la imagen nueva
   const [imagenNueva, setImagenNueva] = useState(null);
 
   const handleChange = (e) => {
@@ -42,23 +42,23 @@ const ModalEditarFicha = ({ ficha, onClose, onFichaActualizada }) => {
     form.append("nombre_cientifico", formData.nombre_cientifico);
     form.append("habitat", formData.habitat);
     form.append("caracteristica", formData.caracteristica);
-    form.append("tipo", formData.tipo);
+    form.append("tipo", formData.tipo); // Asegurar que el tipo se envía
+    
     if (imagenNueva) {
-      form.append("imagen", imagenNueva); // clave para backend
+      form.append("imagen", imagenNueva);
     }
 
     try {
-      const res = await fetch(
+      const res = await axios.put(
         `http://ecomaravillas.duckdns.org:3001/api/especimenes/${formData.id}`,
+        form,
         {
-          method: "PUT",
-          body: form,
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
 
-      if (res.ok) {
-        const actualizada = await res.json();
-        onFichaActualizada(actualizada);
+      if (res.status === 200) {
+        onFichaActualizada(res.data);
         onClose();
       } else {
         alert("Error al actualizar la ficha.");
@@ -79,6 +79,7 @@ const ModalEditarFicha = ({ ficha, onClose, onFichaActualizada }) => {
             accept="image/*"
             onChange={(e) => setImagenNueva(e.target.files[0])}
           />
+          
           <div className="form-group">
             <label>Nombre:</label>
             <input
@@ -100,13 +101,28 @@ const ModalEditarFicha = ({ ficha, onClose, onFichaActualizada }) => {
           </div>
 
           <div className="form-group">
+            <label>Tipo:</label>
+            <select
+              name="tipo"
+              value={formData.tipo}
+              onChange={handleChange}
+            >
+              <option value="Fauna">Fauna</option>
+              <option value="Flora">Flora</option>
+            </select>
+          </div>
+
+          <div className="form-group">
             <label>Hábitat:</label>
-            <input
-              type="text"
+            <select
               name="habitat"
               value={formData.habitat}
               onChange={handleChange}
-            />
+            >
+            <option value="6">Área Exterior</option>
+            <option value="5">Área Acuática</option>
+            <option value="7">Cueva</option>
+            </select>
           </div>
 
           <div className="form-group">
