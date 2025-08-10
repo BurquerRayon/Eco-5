@@ -16,8 +16,16 @@ router.post('/register', async (req, res) => {
     return res.status(400).json({ message: 'Faltan campos obligatorios' });
   }
 
+  // Validar longitud de contraseña
+  if (contrasena.length < 6) {
+    return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
+  }
+
   try {
     await poolConnect;
+
+    // Resto del código de registro permanece igual...
+    // ... [el resto de tu código existente]
 
     // Verificar si ya existe el usuario
     const existe = await pool.request()

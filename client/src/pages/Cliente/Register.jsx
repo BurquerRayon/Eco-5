@@ -13,6 +13,7 @@ const Register = () => {
   });
 
   const [mensaje, setMensaje] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false); // Nuevo estado para controlar el envío
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -22,9 +23,17 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true); // Comienza el envío, deshabilitamos los controles
+
+    if (formData.contrasena.length < 6) {
+      setMensaje('❌ La contraseña debe tener al menos 6 caracteres');
+      setIsSubmitting(false);
+      return;
+    }
 
     if (formData.contrasena !== formData.confirmar) {
       setMensaje('❌ Las contraseñas no coinciden');
+      setIsSubmitting(false);
       return;
     }
 
@@ -40,6 +49,7 @@ const Register = () => {
     } catch (err) {
       console.error(err);
       setMensaje(err.response?.data?.message || '❌ Error al registrar');
+      setIsSubmitting(false); // Rehabilitamos los controles si hay error
     }
   };
 
@@ -64,6 +74,7 @@ const Register = () => {
                   value={formData.nombre}
                   onChange={handleChange}
                   required
+                  disabled={isSubmitting} // Deshabilitado durante envío
                 />
               </div>
               <div className="register-form-group">
@@ -74,16 +85,19 @@ const Register = () => {
                   value={formData.correo}
                   onChange={handleChange}
                   required
+                  disabled={isSubmitting} // Deshabilitado durante envío
                 />
               </div>
               <div className="register-form-group">
-                <label htmlFor="contrasena">Contraseña</label>
+                <label htmlFor="contrasena">Contraseña (mínimo 6 caracteres)</label>
                 <input
                   type="password"
                   id="contrasena"
                   value={formData.contrasena}
                   onChange={handleChange}
                   required
+                  minLength="6"
+                  disabled={isSubmitting} // Deshabilitado durante envío
                 />
               </div>
               <div className="register-form-group">
@@ -94,10 +108,16 @@ const Register = () => {
                   value={formData.confirmar}
                   onChange={handleChange}
                   required
+                  minLength="6"
+                  disabled={isSubmitting} // Deshabilitado durante envío
                 />
               </div>
-              <button type="submit" className="register-btn">
-                Registrarse
+              <button 
+                type="submit" 
+                className="register-btn"
+                disabled={isSubmitting} // Deshabilitado durante envío
+              >
+                {isSubmitting ? 'Registrando...' : 'Registrarse'}
               </button>
             </form>
             {mensaje && <p className={mensajeClase}>{mensaje}</p>}

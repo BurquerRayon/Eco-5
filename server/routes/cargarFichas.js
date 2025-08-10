@@ -3,14 +3,14 @@ const axios = require("axios");
 const API_URL = "http://ecomaravillas.duckdns.org:3001/api/especimenes";
 const fichas = require("./fichas");
 
-// Mapeo de nombres de hábitat a IDs (deben coincidir con tu BD)
-const HABITATS = {
-  "Área Exterior": 5,
-  "Área Acuática": 6,
-  "Cueva": 7
+// Mapeo inicial de nombres de hábitat a IDs (se actualizará con los IDs reales)
+let HABITATS = {
+  "Área Exterior": null,
+  "Área Acuática": null,
+  "Cueva": null
 };
 
-// Añadir función de normalización mejorada
+// Función de normalización mejorada
 function normalizarHabitat(nombre) {
   const normalized = nombre
     .normalize("NFD")
@@ -23,30 +23,46 @@ function normalizarHabitat(nombre) {
     "area exterior": "Área Exterior",
     "area acuatica": "Área Acuática",
     "area ácuatica": "Área Acuática",
-    "cueva": "Cueva"
+    "cueva": "Cueva",
+    "cuevas": "Cueva"
   };
   return mapaAlternativos[normalized] || nombre;
 }
 
-// Modificar la función crearHabitatSiNoExiste
+// Función para crear hábitat si no existe
 async function crearHabitatSiNoExiste(nombre) {
   const nombreNormalizado = normalizarHabitat(nombre);
   
   try {
-    // Verificar si ya existe con el nombre normalizado
+    // Verificar si ya existe
     const resExistente = await axios.get(`${API_URL}/habitats?nombre=${encodeURIComponent(nombreNormalizado)}`);
     
     if (resExistente.data.length > 0) {
       return resExistente.data[0].id_habitat;
     }
     
-    // Si no existe, crear con el nombre normalizado
+    // Si no existe, crear nuevo hábitat
+    const descripcion = {
+      "Área Exterior": "Áreas abiertas y exteriores del parque",
+      "Área Acuática": "Zonas con cuerpos de agua",
+      "Cueva": "Hábitat de cuevas y áreas subterráneas"
+    }[nombreNormalizado] || nombreNormalizado;
+
+    const ubicacion = {
+      "Área Exterior": "Todo el parque",
+      "Área Acuática": "Lagunas y ríos del parque",
+      "Cueva": "Zonas de cuevas del parque"
+    }[nombreNormalizado] || "";
+
     const response = await axios.post(`${API_URL}/habitats`, { 
-      nombre: nombreNormalizado 
+      nombre: nombreNormalizado,
+      descripcion: descripcion,
+      ubicacion: ubicacion
     }, {
       headers: { 'Content-Type': 'application/json' }
     });
     
+    console.log(`✅ Hábitat creado: ${nombreNormalizado} (ID: ${response.data.id_habitat})`);
     return response.data.id_habitat;
   } catch (error) {
     console.error('Error al crear/verificar hábitat:', error);
@@ -58,7 +74,14 @@ async function cargarFichas() {
   try {
     console.log("🔄 Preparando carga de fichas...");
     
-    // Primero asegurar que los hábitats existen
+    // Primero asegurar que los hábitats base existen
+    console.log("🔄 Verificando/Creando hábitats base...");
+    for (const habitatNombre of Object.keys(HABITATS)) {
+      const id = await crearHabitatSiNoExiste(habitatNombre);
+      HABITATS[habitatNombre] = id;
+    }
+
+    // Verificar otros hábitats que puedan estar en las fichas
     const habitatsUnicos = new Set();
     fichas.forEach(ficha => {
       if (Array.isArray(ficha.habitat)) {
@@ -69,22 +92,23 @@ async function cargarFichas() {
     });
 
     for (const habitatNombre of habitatsUnicos) {
-      const normalized = habitatNombre.trim();
+      const normalized = normalizarHabitat(habitatNombre.trim());
       if (!HABITATS[normalized]) {
         const id = await crearHabitatSiNoExiste(normalized);
         HABITATS[normalized] = id;
-        console.log(`✅ Hábitat creado: ${normalized} (ID: ${id})`);
       }
     }
 
     // Preparar fichas para la API
     const fichasParaAPI = fichas.map(ficha => {
       const habitat = Array.isArray(ficha.habitat) ? ficha.habitat[0] : ficha.habitat;
+      const habitatNormalizado = normalizarHabitat(habitat.trim());
+      
       return {
         nombre_comun: ficha.nombre,
         nombre_cientifico: ficha.especie,
         descripcion: ficha.caracteristica,
-        id_habitat: HABITATS[habitat.trim()],
+        id_habitat: HABITATS[habitatNormalizado],
         imagen_url: ficha.src,
         tipo: ficha.tipo
       };

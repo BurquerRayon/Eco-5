@@ -59,7 +59,7 @@ function pickHabitat(rawHabitat) {
 // POST /api/especimenes/habitats - Crear nuevo hábitat
 router.post('/habitats', async (req, res) => {
   try {
-    const { nombre } = req.body;
+    const { nombre, descripcion = "", ubicacion = "" } = req.body;
     
     // Verificar si ya existe
     const existe = await pool.request()
@@ -67,8 +67,8 @@ router.post('/habitats', async (req, res) => {
       .query('SELECT id_habitat FROM Habitat WHERE nombre = @nombre');
       
     if (existe.recordset.length > 0) {
-      return res.status(409).json({ 
-        error: 'El hábitat ya existe',
+      return res.status(200).json({ 
+        mensaje: 'El hábitat ya existe',
         id_habitat: existe.recordset[0].id_habitat
       });
     }
@@ -76,8 +76,8 @@ router.post('/habitats', async (req, res) => {
     // Crear nuevo hábitat
     const result = await pool.request()
       .input('nombre', sql.NVarChar(100), nombre)
-      .input('descripcion', sql.NVarChar(sql.MAX), '')
-      .input('ubicacion', sql.NVarChar(200), '')
+      .input('descripcion', sql.NVarChar(sql.MAX), descripcion)
+      .input('ubicacion', sql.NVarChar(200), ubicacion)
       .query(`
         INSERT INTO Habitat (nombre, descripcion, ubicacion)
         OUTPUT INSERTED.id_habitat
