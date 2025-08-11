@@ -8,13 +8,10 @@ import ModalEditarFicha from "../../components/ModalEditarFicha";
 import ModalCrearFicha from "../../components/ModalCrearFicha";
 import cargarNuevasFichas from "../../helpers/CargarNuevasFicha";
 
-/**
- *
- * @returns
- */
 const Galeria = () => {
   const [filtroEspecie, setFiltroEspecie] = useState("");
   const [filtroHabitat, setFiltroHabitat] = useState("");
+  const [busquedaTexto, setBusquedaTexto] = useState(""); // Nuevo estado para el buscador
   const [especieSeleccionada, setEspecieSeleccionada] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,7 +26,7 @@ const Galeria = () => {
       navigate("/");
     }
   };
-  const [tarjetaExpandida, setTarjetaExpandida] = useState(null); //estado para mostrar caracteristica//
+  const [tarjetaExpandida, setTarjetaExpandida] = useState(null);
   const [imagenesMezcladas, setImagenesMezcladas] = useState([]);
   const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
   const [fichaParaEditar, setFichaParaEditar] = useState(null);
@@ -37,11 +34,11 @@ const Galeria = () => {
 
   const cargarFichas = async () => {
     const nuevasFichas = await cargarNuevasFichas();
-    setImagenesMezcladas(mezclarArray(nuevasFichas)); // o solo setImagenesMezcladas(nuevasFichas)
+    setImagenesMezcladas(mezclarArray(nuevasFichas));
   };
 
   const eliminarFicha = async (e, idFicha) => {
-    e.stopPropagation(); // evita que abra el modal
+    e.stopPropagation();
 
     if (!window.confirm("¿Seguro que deseas eliminar esta ficha?")) return;
 
@@ -49,7 +46,7 @@ const Galeria = () => {
       await axios.delete(`http://ecomaravillas.duckdns.org:3001/api/especimenes/${idFicha}`);
       alert("Ficha eliminada correctamente ✅");
 
-      await cargarFichas(); // recarga fichas del servidor
+      await cargarFichas();
     } catch (error) {
       console.error("❌ Error al eliminar ficha:", error);
       alert("Error al eliminar ficha");
@@ -65,52 +62,42 @@ const Galeria = () => {
     fetchFichas();
   }, []);
 
-  const imagenes = [];
-  /*} */
-  /**ETIQUETA PARA QUITAR EL COMENTARIO */
-
-  // Mezcla aleatoria de las fichas
   function mezclarArray(array) {
     return array
       .map((item) => ({ item, sort: Math.random() }))
       .sort((a, b) => a.sort - b.sort)
       .map(({ item }) => item);
   }
-  // Aplica mezcla a las imágenes
-  /*useEffect(() => {
-    setImagenesMezcladas(mezclarArray(imagenes));
-  }, []); */
 
   const resultados = imagenesMezcladas.filter((img) => {
     const especieEsTodas = filtroEspecie === "" || filtroEspecie === "Todas";
     const habitatEsTodos = filtroHabitat === "" || filtroHabitat === "Todos";
-
-    if (especieEsTodas && habitatEsTodos) {
-      return true;
-    }
-
-    const especieMatch = especieEsTodas || img.tipo === filtroEspecie;
-
+    
     // Normaliza tildes y mayúsculas para evitar errores
     const normalizar = (texto) =>
       texto
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase();
-
+  
+    // Filtro por texto de búsqueda (solo en nombre y nombre científico)
+    const textoBusquedaNormalizado = normalizar(busquedaTexto);
+    const textoMatch = 
+      busquedaTexto === "" ||
+      normalizar(img.nombre).includes(textoBusquedaNormalizado) ||
+      normalizar(img.especie).includes(textoBusquedaNormalizado);
+  
+    const especieMatch = especieEsTodas || img.tipo === filtroEspecie;
+  
     const filtroHabitatNormalizado = normalizar(filtroHabitat);
-
     const habitatMatch =
       habitatEsTodos ||
       (Array.isArray(img.habitat)
         ? img.habitat.some((h) => normalizar(h) === filtroHabitatNormalizado)
         : normalizar(img.habitat) === filtroHabitatNormalizado);
-
-    return especieMatch && habitatMatch;
+  
+    return textoMatch && especieMatch && habitatMatch;
   });
-
-  /*const hayFiltros = filtroEspecie || filtroHabitat; */
-  console.log("Mostrar modal crear?", mostrarModalCrear);
 
   return (
     <div className="page-wrapper">
@@ -124,6 +111,18 @@ const Galeria = () => {
           <p>
             Explora nuestras imágenes rotativas o filtra por especie/hábitat:
           </p>
+          
+          {/* Nuevo buscador por texto */}
+          <div className="search-container">
+          <input
+            type="text"
+            placeholder="Buscar por nombre o nombre científico..."
+            value={busquedaTexto}
+            onChange={(e) => setBusquedaTexto(e.target.value)}
+            className="search-input"
+          />
+          </div>
+
           {esEmpleado && (
             <button
               className="btn-crear-ficha"
@@ -163,11 +162,6 @@ const Galeria = () => {
             </div>
           </div>
 
-          {/* {!hayFiltros ? (
-            <div className="carousel-container">
-              <Carrusel />
-            </div>
-          ) : ( */}
           <div className="resultados-grid">
             {resultados.length > 0 ? (
               resultados.map((img, idx) => (
@@ -199,8 +193,8 @@ const Galeria = () => {
                             nombre_cientifico: img.especie,
                             habitat: img.habitat,
                             caracteristica: img.caracteristica,
-                            tipo: img.tipo, // ← asegúrate de que lo tienes
-                            src: img.src, // ← no pongas "imagen", pon "src"
+                            tipo: img.tipo,
+                            src: img.src,
                           });
 
                           setMostrarModalEditar(true);
@@ -223,7 +217,7 @@ const Galeria = () => {
               <p>No se encontraron resultados.</p>
             )}
           </div>
-          {/* )} */}
+
           {mostrarModalEditar && fichaParaEditar && (
             <ModalEditarFicha
               ficha={fichaParaEditar}
@@ -241,7 +235,6 @@ const Galeria = () => {
             />
           )}
 
-          {/* Vista detallada al hacer clic */}
           {especieSeleccionada && (
             <div className="detalle-especie">
               <button
@@ -277,7 +270,7 @@ const Galeria = () => {
           {mostrarModalCrear && (
             <ModalCrearFicha
               onClose={() => setMostrarModalCrear(false)}
-              onFichaCreada={cargarFichas} // Actualiza las fichas al crear una nueva
+              onFichaCreada={cargarFichas}
             />
           )}
         </div>
