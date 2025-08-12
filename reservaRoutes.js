@@ -704,4 +704,90 @@ router.get("/reportes", async (req, res) => {
       .json({ error: "Error interno al obtener reportes de pago" });
   }
 });
+router.post("/mantenimiento", async (req, res) => {
+  try {
+    const {
+      titulo,
+      descripcion,
+      observacion,
+      fecha,
+      hora,
+      frecuencia,
+      id_personal,
+      id_tipo_reporte,
+    } = req.body;
+
+    await poolConnect;
+    const request = pool.request();
+    const result = await request.query(`
+      DECLARE @id_reporte_detalle INT;
+      INSERT INTO Reporte_Detalle (
+        titulo, fecha_creacion, fecha, hora,
+        descripcion, observacion, estado, frecuencia, id_personal
+      )
+      VALUES (
+        '${titulo}', GETDATE(), '${fecha}', '${hora}',
+        '${descripcion}', '${observacion}', 'pendiente', '${frecuencia}', ${id_personal}
+      );
+      SET @id_reporte_detalle = SCOPE_IDENTITY();
+      INSERT INTO Reporte (id_reporte_detalle, id_tipo_reporte)
+      VALUES (@id_reporte_detalle, ${id_tipo_reporte});
+    `);
+
+    res.status(200).json({
+      message: "Actividad de mantenimiento registrada correctamente.",
+    });
+  } catch (error) {
+    console.error("Error al registrar mantenimiento:", error);
+    res.status(500).json({ error: "Error al registrar mantenimiento" });
+  }
+});
+
+router.get("/mantenimiento", async (req, res) => {
+  try {
+    await poolConnect;
+    const request = pool.request();
+    const result = await request.query(`
+      SELECT 
+        d.titulo, d.descripcion, d.fecha, d.hora,d.estado, 
+        d.frecuencia,p.id_personal, p.especialidad,
+        CASE 
+          WHEN d.estado IN ('pagado', 'confirmado') THEN
+            CASE 
+              WHEN per.cedula IS NOT NULL AND per.cedula <> '' 
+                THEN per.cedula
+              WHEN td.numero_documento IS NOT NULL AND td.numero_documento <> '' 
+                THEN td.numero_documento
+              ELSE NULL
+            END
+          ELSE NULL
+        END AS cedula_o_pasaporte,
+        trep.nombre AS tipo_reporte
+      FROM Reporte r
+      JOIN Reporte_Detalle d 
+        ON r.id_reporte_detalle = d.id_reporte_detalle
+      JOIN Tipo_Reporte trep 
+        ON r.id_tipo_reporte = trep.id_tipo_reporte
+      LEFT JOIN Personal p 
+        ON d.id_personal = p.id_personal
+      LEFT JOIN Usuario u 
+        ON p.id_usuario = u.id_usuario
+      LEFT JOIN Persona per 
+        ON u.id_persona = per.id_persona
+      LEFT JOIN Turista tur 
+        ON u.id_usuario = tur.id_usuario
+      LEFT JOIN Turista_Documentos td 
+        ON tur.id_usuario = td.id_usuario
+      WHERE trep.nombre = 'mantenimiento programado'
+      ORDER BY d.fecha DESC, d.hora DESC;
+    `);
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error al obtener actividades:", error);
+    res
+      .status(500)
+      .json({ error: "Error al obtener actividades de mantenimiento" });
+  }
+});
+
 module.exports = router;
