@@ -39,18 +39,28 @@ function obtenerBloqueHorario(hora) {
   return `${inicio} - ${fin}`;
 }
 
-// Obtener todas las reservas con detalles relevantes para los guías
+// Obtener todas las reservas con detalles relevantes para los guías, con cedula o pasaporte solo si estado es pagado o confirmado
 router.get("/guias", async (req, res) => {
   try {
-    const result = await pool.query(`
+    await poolConnect;
+    const request = pool.request();
+
+    const result = await request.query(`
       SELECT 
         rd.fecha,
         rd.hora,
         a.nombre AS atraccion,
         rd.cantidad,
         r.estado,
-        per.cedula,
-        td.numero_documento AS pasaporte
+        CASE 
+          WHEN r.estado IN ('pagado', 'confirmado') THEN
+            CASE 
+              WHEN per.cedula IS NOT NULL AND per.cedula <> '' THEN per.cedula
+              WHEN td.numero_documento IS NOT NULL AND td.numero_documento <> '' THEN td.numero_documento
+              ELSE NULL
+            END
+          ELSE NULL
+        END AS cedula_o_pasaporte
       FROM Reservas r
       JOIN Reserva_Detalles rd ON r.id_reserva = rd.id_reserva
       JOIN Atraccion a ON rd.id_atraccion = a.id_atraccion
@@ -743,42 +753,22 @@ router.post("/mantenimiento", async (req, res) => {
   }
 });
 
+
 router.get("/mantenimiento", async (req, res) => {
   try {
     await poolConnect;
     const request = pool.request();
     const result = await request.query(`
       SELECT 
-        d.titulo, d.descripcion, d.fecha, d.hora,d.estado, 
-        d.frecuencia,p.id_personal, p.especialidad,
-        CASE 
-          WHEN d.estado IN ('pagado', 'confirmado') THEN
-            CASE 
-              WHEN per.cedula IS NOT NULL AND per.cedula <> '' 
-                THEN per.cedula
-              WHEN td.numero_documento IS NOT NULL AND td.numero_documento <> '' 
-                THEN td.numero_documento
-              ELSE NULL
-            END
-          ELSE NULL
-        END AS cedula_o_pasaporte,
-        trep.nombre AS tipo_reporte
+        d.titulo, d.descripcion, d.fecha, d.hora,
+        d.estado, d.frecuencia,
+        p.id_personal, p.especialidad,
+        t.nombre AS tipo_reporte
       FROM Reporte r
-      JOIN Reporte_Detalle d 
-        ON r.id_reporte_detalle = d.id_reporte_detalle
-      JOIN Tipo_Reporte trep 
-        ON r.id_tipo_reporte = trep.id_tipo_reporte
-      LEFT JOIN Personal p 
-        ON d.id_personal = p.id_personal
-      LEFT JOIN Usuario u 
-        ON p.id_usuario = u.id_usuario
-      LEFT JOIN Persona per 
-        ON u.id_persona = per.id_persona
-      LEFT JOIN Turista tur 
-        ON u.id_usuario = tur.id_usuario
-      LEFT JOIN Turista_Documentos td 
-        ON tur.id_usuario = td.id_usuario
-      WHERE trep.nombre = 'mantenimiento programado'
+      JOIN Reporte_Detalle d ON r.id_reporte_detalle = d.id_reporte_detalle
+      JOIN Tipo_Reporte t ON r.id_tipo_reporte = t.id_tipo_reporte
+      LEFT JOIN Personal p ON d.id_personal = p.id_personal
+      WHERE t.nombre = 'mantenimiento programado'
       ORDER BY d.fecha DESC, d.hora DESC;
     `);
     res.json(result.recordset);
@@ -791,3 +781,4 @@ router.get("/mantenimiento", async (req, res) => {
 });
 
 module.exports = router;
+
