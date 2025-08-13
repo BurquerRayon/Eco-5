@@ -39,18 +39,28 @@ function obtenerBloqueHorario(hora) {
   return `${inicio} - ${fin}`;
 }
 
-// Obtener todas las reservas con detalles relevantes para los guías
+// Obtener todas las reservas con detalles relevantes para los guías, con cedula o pasaporte solo si estado es pagado o confirmado
 router.get("/guias", async (req, res) => {
   try {
-    const result = await pool.query(`
+    await poolConnect;
+    const request = pool.request();
+
+    const result = await request.query(`
       SELECT 
         rd.fecha,
         rd.hora,
         a.nombre AS atraccion,
         rd.cantidad,
         r.estado,
-        per.cedula,
-        td.numero_documento AS pasaporte
+        CASE 
+          WHEN r.estado IN ('pagado', 'confirmado') THEN
+            CASE 
+              WHEN per.cedula IS NOT NULL AND per.cedula <> '' THEN per.cedula
+              WHEN td.numero_documento IS NOT NULL AND td.numero_documento <> '' THEN td.numero_documento
+              ELSE NULL
+            END
+          ELSE NULL
+        END AS cedula_o_pasaporte
       FROM Reservas r
       JOIN Reserva_Detalles rd ON r.id_reserva = rd.id_reserva
       JOIN Atraccion a ON rd.id_atraccion = a.id_atraccion
@@ -704,4 +714,71 @@ router.get("/reportes", async (req, res) => {
       .json({ error: "Error interno al obtener reportes de pago" });
   }
 });
+router.post("/mantenimiento", async (req, res) => {
+  try {
+    const {
+      titulo,
+      descripcion,
+      observacion,
+      fecha,
+      hora,
+      frecuencia,
+      id_personal,
+      id_tipo_reporte,
+    } = req.body;
+
+    await poolConnect;
+    const request = pool.request();
+    const result = await request.query(`
+      DECLARE @id_reporte_detalle INT;
+      INSERT INTO Reporte_Detalle (
+        titulo, fecha_creacion, fecha, hora,
+        descripcion, observacion, estado, frecuencia, id_personal
+      )
+      VALUES (
+        '${titulo}', GETDATE(), '${fecha}', '${hora}',
+        '${descripcion}', '${observacion}', 'pendiente', '${frecuencia}', ${id_personal}
+      );
+      SET @id_reporte_detalle = SCOPE_IDENTITY();
+      INSERT INTO Reporte (id_reporte_detalle, id_tipo_reporte)
+      VALUES (@id_reporte_detalle, ${id_tipo_reporte});
+    `);
+
+    res.status(200).json({
+      message: "Actividad de mantenimiento registrada correctamente.",
+    });
+  } catch (error) {
+    console.error("Error al registrar mantenimiento:", error);
+    res.status(500).json({ error: "Error al registrar mantenimiento" });
+  }
+});
+
+
+router.get("/mantenimiento", async (req, res) => {
+  try {
+    await poolConnect;
+    const request = pool.request();
+    const result = await request.query(`
+      SELECT 
+        d.titulo, d.descripcion, d.fecha, d.hora,
+        d.estado, d.frecuencia,
+        p.id_personal, p.especialidad,
+        t.nombre AS tipo_reporte
+      FROM Reporte r
+      JOIN Reporte_Detalle d ON r.id_reporte_detalle = d.id_reporte_detalle
+      JOIN Tipo_Reporte t ON r.id_tipo_reporte = t.id_tipo_reporte
+      LEFT JOIN Personal p ON d.id_personal = p.id_personal
+      WHERE t.nombre = 'mantenimiento programado'
+      ORDER BY d.fecha DESC, d.hora DESC;
+    `);
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error al obtener actividades:", error);
+    res
+      .status(500)
+      .json({ error: "Error al obtener actividades de mantenimiento" });
+  }
+});
+
 module.exports = router;
+
