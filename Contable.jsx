@@ -7,7 +7,7 @@ const Contable = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/api/pagos/reportes")
+      .get("http://20.83.162.99:3001/api/pagos/reportes")
       .then((res) => setPagos(res.data))
       .catch((err) => console.error("Error al cargar pagos:", err));
   }, []);

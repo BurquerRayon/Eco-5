@@ -52,7 +52,7 @@ const SeguridadForm = () => {
       return;
     }
 
-    if (formData.contrasenaNueva.length < 8) {
+    if (formData.contrasenaNueva.length < 6) {
       setMensaje({ text: '❌ La contraseña debe tener al menos 8 caracteres', type: 'error' });
       return;
     }
@@ -142,7 +142,7 @@ const SeguridadForm = () => {
                 value={formData.contrasenaNueva}
                 onChange={handlePasswordChange}
                 required
-                minLength="8"
+                minLength="6"
               />
               <span
                 className="password-toggle-icon"
