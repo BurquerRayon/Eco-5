@@ -1,101 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '../../styles/PagoCliente.css';
 
 const ClientePago = ({ reserva, onCerrar }) => {
-  const [formData, setFormData] = useState({
-    nombre: '',
-    tarjeta: '',
-    vencimiento: '',
-    cvv: ''
-  });
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentCompleted, setPaymentCompleted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [paypalButtons, setPaypalButtons] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Formatear número de tarjeta (agregar espacios cada 4 dígitos)
-    if (name === 'tarjeta') {
-      const formattedValue = value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
-      setFormData(prev => ({ ...prev, [name]: formattedValue }));
-      return;
-    }
-    
-    // Formatear fecha de vencimiento (MM/YY)
-    if (name === 'vencimiento') {
-      const formattedValue = value
-        .replace(/\D/g, '')
-        .replace(/(\d{2})(\d)/, '$1/$2')
-        .substring(0, 5);
-      setFormData(prev => ({ ...prev, [name]: formattedValue }));
-      return;
-    }
-    
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const validate = () => {
-    const newErrors = {};
-    
-    if (!formData.nombre.trim()) {
-      newErrors.nombre = 'Nombre del titular es requerido';
-    }
-    
-    if (!formData.tarjeta.trim()) {
-      newErrors.tarjeta = 'Número de tarjeta es requerido';
-    } else if (formData.tarjeta.replace(/\s/g, '').length < 16) {
-      newErrors.tarjeta = 'Número de tarjeta incompleto';
-    }
-    
-    if (!formData.vencimiento) {
-      newErrors.vencimiento = 'Fecha de vencimiento es requerida';
-    } else {
-      const [month, year] = formData.vencimiento.split('/');
-      if (!month || !year || month.length !== 2 || year.length !== 2) {
-        newErrors.vencimiento = 'Formato inválido (MM/YY)';
-      } else {
-        const currentYear = new Date().getFullYear() % 100;
-        const currentMonth = new Date().getMonth() + 1;
-        
-        if (parseInt(year) < currentYear || 
-            (parseInt(year) === currentYear && parseInt(month) < currentMonth)) {
-          newErrors.vencimiento = 'Tarjeta expirada';
-        }
-      }
-    }
-    
-    if (!formData.cvv) {
-      newErrors.cvv = 'CVV es requerido';
-    } else if (formData.cvv.length < 3) {
-      newErrors.cvv = 'CVV debe tener 3-4 dígitos';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validate()) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      // Simular procesamiento de pago
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      alert(`✅ Pago simulado exitoso para la reserva #${reserva?.id_reserva}`);
-      onCerrar();
-    } catch (error) {
-      console.error('Error en el pago:', error);
-      alert('❌ Error al procesar el pago');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Función para formatear la hora (similar a HistorialReservas)
+  // Función para formatear la hora
   const formatearHora = (horaObj) => {
     if (!horaObj) return '';
     
@@ -114,7 +27,7 @@ const ClientePago = ({ reserva, onCerrar }) => {
     }
   };
 
-  // Función para obtener bloque horario (similar a HistorialReservas)
+  // Función para obtener bloque horario
   const obtenerBloqueHorario = (hora) => {
     if (!hora) return '';
     
@@ -133,6 +46,114 @@ const ClientePago = ({ reserva, onCerrar }) => {
     const fin = `${String(finH).padStart(2, '0')}:${String(finM).padStart(2, '0')}`;
     return `${inicio} - ${fin}`;
   };
+
+  // Cargar PayPal SDK y configurar botones
+  useEffect(() => {
+    if (!reserva || paypalButtons) return;
+
+    const loadPaypalScript = () => {
+      const script = document.createElement('script');
+      script.src = `https://www.paypal.com/sdk/js?client-id=ASCXT5c6-Fol_DIRSRUILTxdlMuOSH9791NXD5UyB4_qb9P4vz0NBG2v5BGWs-dBmsmgkTFNwGIOE9Ef&currency=USD`;
+      script.async = true;
+      
+      script.onload = () => {
+        if (window.paypal) {
+          try {
+            const buttons = window.paypal.Buttons({
+              createOrder: (data, actions) => {
+                return actions.order.create({
+                  purchase_units: [{
+                    amount: {
+                      value: reserva.subtotal.toFixed(2),
+                      currency_code: "USD"
+                    }
+                  }]
+                });
+              },
+              onApprove: async (data, actions) => {
+                try {
+                  setLoading(true);
+                  const details = await actions.order.capture();
+                  console.log("Pago completado:", details);
+                  
+                  // Actualizar estado de la reserva
+                  const response = await axios.put(
+                    `http://20.83.162.99:3001/api/reservas/estado/${reserva.id_reserva}`,
+                    { estado: "confirmado" }
+                  );
+                  
+                  if (response.data.message) {
+                    setPaymentCompleted(true);
+                    if (global.io) {
+                      global.io.emit("reserva_actualizada", {
+                        id_reserva: reserva.id_reserva,
+                        timestamp: new Date(),
+                      });
+                    }
+                  }
+                } catch (error) {
+                  console.error("Error al procesar el pago:", error);
+                  setErrorMessage('Error al procesar el pago. Por favor, inténtalo de nuevo.');
+                } finally {
+                  setLoading(false);
+                }
+              },
+              onError: (err) => {
+                console.error("Error en el pago:", err);
+                setErrorMessage('Ocurrió un error durante el proceso de pago.');
+              }
+            });
+            
+            if (buttons.isEligible()) {
+              setPaypalButtons(buttons);
+            } else {
+              setErrorMessage('PayPal no está disponible en este momento. Por favor, prueba otro método de pago.');
+            }
+          } catch (error) {
+            console.error("Error al inicializar PayPal:", error);
+            setErrorMessage('Error al cargar el servicio de pagos.');
+          }
+        }
+      };
+      
+      script.onerror = () => {
+        console.error('Error al cargar PayPal SDK');
+        setErrorMessage('No se pudo cargar el servicio de pagos. Por favor, recarga la página.');
+      };
+
+      document.body.appendChild(script);
+      
+      return () => {
+        document.body.removeChild(script);
+      };
+    };
+
+    // Si ya está cargado el SDK
+    if (window.paypal) {
+      loadPaypalScript();
+    } else {
+      // Esperar a que esté listo el DOM
+      const timer = setTimeout(() => {
+        loadPaypalScript();
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [reserva, paypalButtons]);
+
+  // Renderizar los botones de PayPal
+  useEffect(() => {
+    if (paypalButtons && document.getElementById('paypal-button-container')) {
+      try {
+        paypalButtons.render('#paypal-button-container').catch(err => {
+          console.error("Error al renderizar botones PayPal:", err);
+          setErrorMessage('Error al cargar los botones de pago.');
+        });
+      } catch (error) {
+        console.error("Error al renderizar PayPal:", error);
+      }
+    }
+  }, [paypalButtons]);
 
   if (!reserva) return null;
 
@@ -155,87 +176,33 @@ const ClientePago = ({ reserva, onCerrar }) => {
             </ul>
           </div>
 
-          <form className="modal-formulario" onSubmit={handleSubmit}>
-            <h3>Información de Pago</h3>
-
-            <div className="form-group">
-              <label htmlFor="nombre">Nombre en la tarjeta</label>
-              <input
-                id="nombre"
-                name="nombre"
-                type="text"
-                value={formData.nombre}
-                onChange={handleChange}
-                placeholder="Nombre de la tarjeta"
-                className={errors.nombre ? 'input-error' : ''}
-              />
-              {errors.nombre && <span className="error-message">{errors.nombre}</span>}
+          {paymentCompleted ? (
+            <div className="pago-completado">
+              <h3>✅ Pago completado exitosamente</h3>
+              <p>Tu reserva ha sido confirmada. Recibirás un correo con los detalles.</p>
+              <button 
+                onClick={onCerrar} 
+                className="btn-pagar"
+                disabled={loading}
+              >
+                {loading ? 'Procesando...' : 'Cerrar'}
+              </button>
             </div>
-
-            <div className="form-group">
-              <label htmlFor="tarjeta">Número de tarjeta</label>
-              <input
-                id="tarjeta"
-                name="tarjeta"
-                type="text"
-                value={formData.tarjeta}
-                onChange={handleChange}
-                placeholder="1234 5678 9012 3456"
-                maxLength="19"
-                className={errors.tarjeta ? 'input-error' : ''}
-              />
-              {errors.tarjeta && <span className="error-message">{errors.tarjeta}</span>}
+          ) : (
+            <div className="paypal-container">
+              <h3>Método de Pago</h3>
+              {errorMessage && <p className="error-message">{errorMessage}</p>}
+              
+              {!paypalButtons ? (
+                <div className="paypal-loading">
+                  <p>Cargando servicio de pagos...</p>
+                  <div className="spinner"></div>
+                </div>
+              ) : (
+                <div id="paypal-button-container"></div>
+              )}
             </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="vencimiento">Vencimiento (MM/YY)</label>
-                <input
-                  id="vencimiento"
-                  name="vencimiento"
-                  type="text"
-                  value={formData.vencimiento}
-                  onChange={handleChange}
-                  placeholder="MM/YY"
-                  maxLength="5"
-                  className={errors.vencimiento ? 'input-error' : ''}
-                />
-                {errors.vencimiento && <span className="error-message">{errors.vencimiento}</span>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="cvv">CVV</label>
-                <input
-                  id="cvv"
-                  name="cvv"
-                  type="password"
-                  value={formData.cvv}
-                  onChange={handleChange}
-                  placeholder="123"
-                  maxLength="4"
-                  className={errors.cvv ? 'input-error' : ''}
-                />
-                {errors.cvv && <span className="error-message">{errors.cvv}</span>}
-              </div>
-            </div>
-
-            <div className="tarjetas-aceptadas">
-              <span>Tarjetas aceptadas:</span>
-              <div className="tarjetas-iconos">
-                <span className="tarjeta-icono visa">Visa</span>
-                <span className="tarjeta-icono mastercard">Mastercard</span>
-                <span className="tarjeta-icono amex">Amex</span>
-              </div>
-            </div>
-
-            <button 
-              type="submit" 
-              className="btn-pagar"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Procesando...' : 'Pagar ahora'}
-            </button>
-          </form>
+          )}
         </div>
       </div>
     </div>
