@@ -103,7 +103,6 @@ router.put('/datos/:id_usuario', async (req, res) => {
 });
 
 // En tu archivo de rutas (clientesRoutes.js), modifica temporalmente para debuggear:
-
 router.get('/nacionalidades', async (req, res) => {
   try {
     await poolConnect;
@@ -310,7 +309,6 @@ router.put('/configuracion-seguridad/:id_usuario', async (req, res) => {
 });
 
 // --- RUTAS PARA PREFERENCIAS ---
-
 // Obtener preferencias del usuario
 router.get('/preferencias/:id_usuario', async (req, res) => {
   const { id_usuario } = req.params;
@@ -423,7 +421,6 @@ router.put('/preferencias/:id_usuario', async (req, res) => {
 // ==============================================
 // RUTAS PARA DOCUMENTOS PERSONALES
 // ==============================================
-
 /**
  * @route GET /api/cliente/documentos/:id_usuario
  * @desc Obtiene los documentos del usuario
@@ -476,6 +473,29 @@ router.get('/documentos/:id_usuario', async (req, res) => {
  * @route POST /api/cliente/documentos/:id_usuario
  * @desc Guarda o actualiza documentos del usuario
  */
+
+
+/**
+ * @route GET /api/cliente/documentos/archivo/:filename
+ * @desc Sirve archivos de documentos
+ */
+router.get('/documentos/archivo/:filename', (req, res) => {
+  const filePath = path.join(__dirname, '../uploads/documentos', req.params.filename);
+  
+  if (fs.existsSync(filePath)) {
+    res.sendFile(filePath);
+  } else {
+    res.status(404).json({ 
+      success: false,
+      message: 'Archivo no encontrado' 
+    });
+  }
+});
+
+
+
+
+// Ruta para guardar documentos
 router.post('/documentos/:id_usuario', upload.fields([
   { name: 'foto_frontal', maxCount: 1 },
   { name: 'foto_reverso', maxCount: 1 }
@@ -484,22 +504,7 @@ router.post('/documentos/:id_usuario', upload.fields([
   const { tipo_documento, numero_documento, cedula, fecha_emision, fecha_expiracion } = req.body;
   const files = req.files;
 
-  // Validación dinámica según el tipo de documento
-  if (!tipo_documento || !fecha_emision) {
-    if (files) {
-      Object.values(files).forEach(fileArray => {
-        fileArray.forEach(file => {
-          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
-        });
-      });
-    }
-    return res.status(400).json({ 
-      success: false,
-      message: 'Faltan campos requeridos: tipo_documento, fecha_emision' 
-    });
-  }
-
-  // Para cédula, verificar que existe el campo cedula
+  // Validación específica para cédula
   if (tipo_documento === 'cedula' && !cedula) {
     if (files) {
       Object.values(files).forEach(fileArray => {
@@ -514,7 +519,7 @@ router.post('/documentos/:id_usuario', upload.fields([
     });
   }
 
-  // Para otros documentos, verificar numero_documento
+  // Validación para otros documentos
   if (tipo_documento !== 'cedula' && !numero_documento) {
     if (files) {
       Object.values(files).forEach(fileArray => {
@@ -529,6 +534,7 @@ router.post('/documentos/:id_usuario', upload.fields([
     });
   }
 
+  // Resto de la lógica del endpoint...
   const transaction = new sql.Transaction(pool);
   
   try {
@@ -645,9 +651,12 @@ router.post('/documentos/:id_usuario', upload.fields([
           CONVERT(varchar, d.fecha_expiracion, 23) as fecha_expiracion,
           t.nombre AS tipo_documento,
           t.foto_frontal_documento,
-          t.foto_reverso_documento
+          t.foto_reverso_documento,
+          p.cedula
         FROM Turista_Documentos d
         JOIN Tipo_Documentos t ON d.id_tipo_documento = t.id_tipo_documento
+        JOIN Usuario u ON d.id_usuario = u.id_usuario
+        JOIN Persona p ON u.id_persona = p.id_persona
         WHERE d.id_usuario = @id_usuario
       `);
 
@@ -677,23 +686,5 @@ router.post('/documentos/:id_usuario', upload.fields([
     });
   }
 });
-
-/**
- * @route GET /api/cliente/documentos/archivo/:filename
- * @desc Sirve archivos de documentos
- */
-router.get('/documentos/archivo/:filename', (req, res) => {
-  const filePath = path.join(__dirname, '../uploads/documentos', req.params.filename);
-  
-  if (fs.existsSync(filePath)) {
-    res.sendFile(filePath);
-  } else {
-    res.status(404).json({ 
-      success: false,
-      message: 'Archivo no encontrado' 
-    });
-  }
-});
-
 
 module.exports = router;

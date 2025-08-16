@@ -43,10 +43,11 @@ const DocumentosForm = () => {
         const doc = response.data[0];
         setDocumentoExistente(doc);
         
+        // Establecer los valores correctos según el tipo de documento
         setFormData({
           tipo_documento: doc.tipo_documento || 'cedula',
-          numero_documento: doc.numero_documento || '',
-          cedula: doc.cedula || '',
+          numero_documento: doc.tipo_documento === 'cedula' ? '' : doc.numero_documento || '',
+          cedula: doc.tipo_documento === 'cedula' ? doc.numero_documento || doc.cedula || '' : '',
           fecha_emision: doc.fecha_emision?.split('T')[0] || '',
           fecha_expiracion: doc.fecha_expiracion?.split('T')[0] || ''
         });
@@ -111,6 +112,7 @@ const DocumentosForm = () => {
       setFormData({ 
         ...formData, 
         [name]: value,
+        // Limpiar campos numéricos al cambiar tipo de documento
         numero_documento: '',
         cedula: ''
       });
@@ -150,7 +152,7 @@ const DocumentosForm = () => {
     if (formData.tipo_documento === 'cedula' && !formData.cedula) {
       setMensaje({ text: '❌ El número de cédula es requerido', type: 'error' });
       return;
-    } else if (!formData.numero_documento) {
+    } else if (formData.tipo_documento !== 'cedula' && !formData.numero_documento) {
       setMensaje({ text: '❌ El número de documento es requerido', type: 'error' });
       return;
     }
@@ -170,8 +172,16 @@ const DocumentosForm = () => {
 
     const formDataToSend = new FormData();
     formDataToSend.append('tipo_documento', formData.tipo_documento);
-    formDataToSend.append('numero_documento', formData.numero_documento);
-    formDataToSend.append('cedula', formData.cedula);
+    
+    // Enviar el campo correcto según el tipo de documento
+    if (formData.tipo_documento === 'cedula') {
+      formDataToSend.append('cedula', formData.cedula);
+      formDataToSend.append('numero_documento', ''); // Enviar vacío para cédula
+    } else {
+      formDataToSend.append('numero_documento', formData.numero_documento);
+      formDataToSend.append('cedula', ''); // Enviar vacío para otros documentos
+    }
+    
     formDataToSend.append('fecha_emision', formData.fecha_emision);
     formDataToSend.append('fecha_expiracion', formData.fecha_expiracion || '');
 
@@ -209,253 +219,263 @@ const DocumentosForm = () => {
   };
 
   return (
-  <div className="documentos-container">
-    <h3 className="section-title">Documentos Personales</h3>
-    
-    {mensaje.text && (
-      <div className={`alert-message ${mensaje.type}`}>
-        {mensaje.text}
-      </div>
-    )}
+    <div className="documentos-container">
+      <h3 className="section-title">Documentos Personales</h3>
+      
+      {mensaje.text && (
+        <div className={`alert-message ${mensaje.type}`}>
+          {mensaje.text}
+        </div>
+      )}
 
-    <div className="documento-existente">
-      {documentoExistente ? (
-        <>
-          <div className="documento-header">
-            <h4>Documento Actual</h4>
+      <div className="documento-existente">
+        {documentoExistente ? (
+          <>
+            <div className="documento-header">
+              <h4>Documento Actual</h4>
+              {!editando && (
+                <button 
+                  className="edit-btn"
+                  onClick={() => setEditando(true)}
+                >
+                  Editar
+                </button>
+              )}
+            </div>
+
+            <div className="documento-datos-row">
+              <div className="documento-dato">
+                <span className="dato-label">Tipo:</span>
+                <span className="dato-value">
+                  {documentoExistente.tipo_documento === 'cedula' ? 'Cédula de Identidad' : 
+                   documentoExistente.tipo_documento === 'pasaporte' ? 'Pasaporte' : 
+                   'Licencia de Conducir'}
+                </span>
+              </div>
+              
+              {documentoExistente.tipo_documento === 'cedula' ? (
+                <div className="documento-dato">
+                  <span className="dato-label">Cédula:</span>
+                  <span className="dato-value">{documentoExistente.cedula || documentoExistente.numero_documento}</span>
+                </div>
+              ) : (
+                <div className="documento-dato">
+                  <span className="dato-label">
+                    {documentoExistente.tipo_documento === 'pasaporte' ? 'Pasaporte:' : 'Licencia:'}
+                  </span>
+                  <span className="dato-value">{documentoExistente.numero_documento}</span>
+                </div>
+              )}
+              
+              <div className="documento-dato">
+                <span className="dato-label">Emisión:</span>
+                <span className="dato-value">
+                  {new Date(documentoExistente.fecha_emision).toLocaleDateString()}
+                </span>
+              </div>
+              
+              {documentoExistente.fecha_expiracion && (
+                <div className="documento-dato">
+                  <span className="dato-label">Expiración:</span>
+                  <span className="dato-value">
+                    {new Date(documentoExistente.fecha_expiracion).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="documento-imagenes-row">
+              <div className="imagen-documento">
+                <p className="imagen-titulo">Foto Frontal</p>
+                {documentoExistente.foto_frontal_url ? (
+                  <img
+                    src={documentoExistente.foto_frontal_url}
+                    alt="Frente del documento"
+                    className="documento-imagen"
+                  />
+                ) : <p className="sin-imagen">No disponible</p>}
+              </div>
+
+              <div className="imagen-documento">
+                <p className="imagen-titulo">Foto Reverso</p>
+                {documentoExistente.foto_reverso_url ? (
+                  <img
+                    src={documentoExistente.foto_reverso_url}
+                    alt="Reverso del documento"
+                    className="documento-imagen"
+                  />
+                ) : <p className="sin-imagen">No disponible</p>}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="sin-documento">
+            <h4>No hay documentos registrados</h4>
             {!editando && (
               <button 
                 className="edit-btn"
                 onClick={() => setEditando(true)}
               >
-                Editar
+                Agregar Documentos
               </button>
             )}
           </div>
+        )}
+      </div>
 
-          <div className="documento-datos-row">
-            <div className="documento-dato">
-              <span className="dato-label">Tipo:</span>
-              <span className="dato-value">{documentoExistente.tipo_documento}</span>
+      {editando && (
+        <form onSubmit={handleSubmit} className="documentos-form">
+          <div className="form-row">
+            <div className="form-group">
+              <label>Tipo de Documento</label>
+              <select
+                name="tipo_documento"
+                value={formData.tipo_documento}
+                onChange={handleChange}
+                required
+              >
+                <option value="cedula">Cédula de Identidad</option>
+                <option value="pasaporte">Pasaporte</option>
+                <option value="licencia">Licencia de Conducir</option>
+              </select>
             </div>
-            
-            {documentoExistente.tipo_documento === 'cedula' ? (
-              <div className="documento-dato">
-                <span className="dato-label">Cédula:</span>
-                <span className="dato-value">{documentoExistente.cedula}</span>
-              </div>
-            ) : (
-              <div className="documento-dato">
-                <span className="dato-label">Número:</span>
-                <span className="dato-value">{documentoExistente.numero_documento}</span>
-              </div>
-            )}
-            
-            <div className="documento-dato">
-              <span className="dato-label">Emisión:</span>
-              <span className="dato-value">
-                {new Date(documentoExistente.fecha_emision).toLocaleDateString()}
-              </span>
+
+            <div className="form-group">
+              {formData.tipo_documento === 'cedula' ? (
+                <>
+                  <label>Número de Cédula</label>
+                  <input
+                    type="text"
+                    name="cedula"
+                    value={formData.cedula}
+                    onChange={handleChange}
+                    placeholder="Ej: 001-1234567-8"
+                    required
+                  />
+                </>
+              ) : (
+                <>
+                  <label>
+                    {formData.tipo_documento === 'pasaporte' 
+                      ? 'Número de Pasaporte' 
+                      : 'Número de Licencia'}
+                  </label>
+                  <input
+                    type="text"
+                    name="numero_documento"
+                    value={formData.numero_documento}
+                    onChange={handleChange}
+                    placeholder={
+                      formData.tipo_documento === 'pasaporte' 
+                      ? 'Ej: A12345678' 
+                      : 'Número de licencia'
+                    }
+                    required
+                  />
+                </>
+              )}
             </div>
-            
-            {documentoExistente.fecha_expiracion && (
-              <div className="documento-dato">
-                <span className="dato-label">Expiración:</span>
-                <span className="dato-value">
-                  {new Date(documentoExistente.fecha_expiracion).toLocaleDateString()}
-                </span>
-              </div>
-            )}
           </div>
 
-          <div className="documento-imagenes-row">
-            <div className="imagen-documento">
-              <p className="imagen-titulo">Foto Frontal</p>
-              {documentoExistente.foto_frontal_url ? (
-                <img
-                  src={documentoExistente.foto_frontal_url}
-                  alt="Frente del documento"
-                  className="documento-imagen"
-                />
-              ) : <p className="sin-imagen">No disponible</p>}
+          <div className="form-row">
+            <div className="form-group">
+              <label>Fecha de Emisión</label>
+              <input
+                type="date"
+                name="fecha_emision"
+                value={formData.fecha_emision}
+                onChange={handleChange}
+                max={new Date().toISOString().split('T')[0]}
+                required
+              />
             </div>
 
-            <div className="imagen-documento">
-              <p className="imagen-titulo">Foto Reverso</p>
-              {documentoExistente.foto_reverso_url ? (
-                <img
-                  src={documentoExistente.foto_reverso_url}
-                  alt="Reverso del documento"
-                  className="documento-imagen"
-                />
-              ) : <p className="sin-imagen">No disponible</p>}
+            <div className="form-group">
+              <label>
+                Fecha de Expiración 
+                {formData.tipo_documento !== 'cedula' && ' (requerido)'}
+              </label>
+              <input
+                type="date"
+                name="fecha_expiracion"
+                value={formData.fecha_expiracion}
+                onChange={handleChange}
+                min={formData.fecha_emision}
+                required={formData.tipo_documento !== 'cedula'}
+              />
             </div>
           </div>
-        </>
-      ) : (
-        <div className="sin-documento">
-          <h4>No hay documentos registrados</h4>
-          {!editando && (
-            <button 
-              className="edit-btn"
-              onClick={() => setEditando(true)}
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Foto Frontal {!documentoExistente?.foto_frontal_url && '(requerido)'}</label>
+              <input
+                type="file"
+                name="foto_frontal"
+                onChange={handleFileChange}
+                accept="image/*"
+                required={!documentoExistente?.foto_frontal_url}
+              />
+              {previewImages.foto_frontal && (
+                <div className="imagen-preview">
+                  <img src={previewImages.foto_frontal} alt="Preview frontal" />
+                </div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label>Foto Reverso (opcional)</label>
+              <input
+                type="file"
+                name="foto_reverso"
+                onChange={handleFileChange}
+                accept="image/*"
+              />
+              {previewImages.foto_reverso && (
+                <div className="imagen-preview">
+                  <img src={previewImages.foto_reverso} alt="Preview reverso" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => {
+                setEditando(false);
+                if (documentoExistente) {
+                  setFormData({
+                    tipo_documento: documentoExistente.tipo_documento || 'cedula',
+                    numero_documento: documentoExistente.tipo_documento === 'cedula' ? '' : documentoExistente.numero_documento || '',
+                    cedula: documentoExistente.tipo_documento === 'cedula' ? documentoExistente.numero_documento || documentoExistente.cedula || '' : '',
+                    fecha_emision: documentoExistente.fecha_emision?.split('T')[0] || '',
+                    fecha_expiracion: documentoExistente.fecha_expiracion?.split('T')[0] || ''
+                  });
+                  setPreviewImages({
+                    foto_frontal: documentoExistente.foto_frontal_url || null,
+                    foto_reverso: documentoExistente.foto_reverso_url || null
+                  });
+                }
+                setFiles({ foto_frontal: null, foto_reverso: null });
+              }}
+              disabled={cargando}
             >
-              Agregar Documentos
+              Cancelar
             </button>
-          )}
-        </div>
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              disabled={cargando}
+            >
+              {cargando ? 'Guardando...' : 'Guardar Cambios'}
+            </button>
+          </div>
+        </form>
       )}
     </div>
-
-    {editando && (
-      <form onSubmit={handleSubmit} className="documentos-form">
-        <div className="form-row">
-          <div className="form-group">
-            <label>Tipo de Documento</label>
-            <select
-              name="tipo_documento"
-              value={formData.tipo_documento}
-              onChange={handleChange}
-              required
-            >
-              <option value="cedula">Cédula de Identidad</option>
-              <option value="pasaporte">Pasaporte</option>
-              <option value="licencia">Licencia de Conducir</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            {formData.tipo_documento === 'cedula' ? (
-              <>
-                <label>Número de Cédula</label>
-                <input
-                  type="text"
-                  name="cedula"
-                  value={formData.cedula}
-                  onChange={handleChange}
-                  placeholder="Ej: 001-1234567-8"
-                  required
-                />
-              </>
-            ) : (
-              <>
-                <label>Número de Documento</label>
-                <input
-                  type="text"
-                  name="numero_documento"
-                  value={formData.numero_documento}
-                  onChange={handleChange}
-                  placeholder={
-                    formData.tipo_documento === 'pasaporte' ? 
-                    'Ej: A12345678' : 
-                    'Número de licencia'
-                  }
-                  required
-                />
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label>Fecha de Emisión</label>
-            <input
-              type="date"
-              name="fecha_emision"
-              value={formData.fecha_emision}
-              onChange={handleChange}
-              max={new Date().toISOString().split('T')[0]}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>
-              Fecha de Expiración 
-              {formData.tipo_documento !== 'cedula' && ' (requerido)'}
-            </label>
-            <input
-              type="date"
-              name="fecha_expiracion"
-              value={formData.fecha_expiracion}
-              onChange={handleChange}
-              min={formData.fecha_emision}
-              required={formData.tipo_documento !== 'cedula'}
-            />
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label>Foto Frontal {!documentoExistente?.foto_frontal_url && '(requerido)'}</label>
-            <input
-              type="file"
-              name="foto_frontal"
-              onChange={handleFileChange}
-              accept="image/*"
-              required={!documentoExistente?.foto_frontal_url}
-            />
-            {previewImages.foto_frontal && (
-              <div className="imagen-preview">
-                <img src={previewImages.foto_frontal} alt="Preview frontal" />
-              </div>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label>Foto Reverso (opcional)</label>
-            <input
-              type="file"
-              name="foto_reverso"
-              onChange={handleFileChange}
-              accept="image/*"
-            />
-            {previewImages.foto_reverso && (
-              <div className="imagen-preview">
-                <img src={previewImages.foto_reverso} alt="Preview reverso" />
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="form-actions">
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => {
-              setEditando(false);
-              if (documentoExistente) {
-                setFormData({
-                  tipo_documento: documentoExistente.tipo_documento || 'cedula',
-                  numero_documento: documentoExistente.numero_documento || '',
-                  cedula: documentoExistente.cedula || '',
-                  fecha_emision: documentoExistente.fecha_emision?.split('T')[0] || '',
-                  fecha_expiracion: documentoExistente.fecha_expiracion?.split('T')[0] || ''
-                });
-                setPreviewImages({
-                  foto_frontal: documentoExistente.foto_frontal_url || null,
-                  foto_reverso: documentoExistente.foto_reverso_url || null
-                });
-              }
-              setFiles({ foto_frontal: null, foto_reverso: null });
-            }}
-            disabled={cargando}
-          >
-            Cancelar
-          </button>
-          <button 
-            type="submit" 
-            className="btn btn-primary" 
-            disabled={cargando}
-          >
-            {cargando ? 'Guardando...' : 'Guardar Cambios'}
-          </button>
-        </div>
-      </form>
-    )}
-  </div>
-);
+  );
 };
 
 export default DocumentosForm;
