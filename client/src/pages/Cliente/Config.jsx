@@ -39,6 +39,13 @@ const ClienteAjustes = () => {
         </button>
         
         <button
+          className={`ajuste-card ${formularioActivo === 'bancaria' ? 'active' : ''}`}
+          onClick={() => manejarSeleccion('bancaria')}
+        >
+          Información Bancaria
+        </button>
+        
+        <button
           className={`ajuste-card ${formularioActivo === 'documentos' ? 'active' : ''}`}
           onClick={() => manejarSeleccion('documentos')}
         >

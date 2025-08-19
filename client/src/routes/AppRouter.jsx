@@ -18,6 +18,7 @@ import Nosotros from "../pages/About";
 import Cuidado from "../pages/Cliente/Cuidado";
 import NotFound from "../pages/NotFound";
 import Verify from "../pages/Verify";
+
 //Empleados
 import ReportesE from "../pages/Empleados/Reports";
 import GestionReservasE from "../pages/Empleados/GestionReservas";

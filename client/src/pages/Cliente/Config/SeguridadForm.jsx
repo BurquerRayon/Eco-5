@@ -178,55 +178,6 @@ const SeguridadForm = () => {
           </button>
         </form>
       </div>
-
-      {/* Configuración de Seguridad */}
-      <div className="security-form-section">
-        <h4 className="security-form-section-title">Configuración de Seguridad</h4>
-        <form onSubmit={handleConfigSubmit} className="security-form">
-          <div className="security-checkbox-container">
-            <input
-              type="checkbox"
-              className="security-checkbox"
-              name="notificacionesEmail"
-              checked={configuracion.notificacionesEmail}
-              onChange={handleConfigChange}
-            />
-            <span className="security-checkbox-label">
-              Recibir notificaciones de seguridad por email
-            </span>
-          </div>
-
-          <div className="security-checkbox-container">
-            <input
-              type="checkbox"
-              className="security-checkbox"
-              name="autenticacionDosFactor"
-              checked={configuracion.autenticacionDosFactor}
-              onChange={handleConfigChange}
-            />
-            <span className="security-checkbox-label">
-              Habilitar autenticación de dos factores (próximamente)
-            </span>
-          </div>
-
-          <div className="security-checkbox-container">
-            <input
-              type="checkbox"
-              className="security-checkbox"
-              name="sesionSegura"
-              checked={configuracion.sesionSegura}
-              onChange={handleConfigChange}
-            />
-            <span className="security-checkbox-label">
-              Cerrar sesión automáticamente por inactividad
-            </span>
-          </div>
-
-          <button type="submit" className="security-form-btn" disabled={cargando}>
-            {cargando ? 'Guardando...' : 'Guardar Configuración'}
-          </button>
-        </form>
-      </div>
     </div>
   );
 };

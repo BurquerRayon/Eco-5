@@ -7,7 +7,6 @@ import '../../../styles/PreferenciasForm.css';
 const PreferenciasForm = () => {
   const [preferencias, setPreferencias] = useState({
     idioma: 'es',
-    moneda: '',
     notificacionesReserva: true,
     notificacionesPromociones: false,
     notificacionesMantenimiento: true,
@@ -17,7 +16,6 @@ const PreferenciasForm = () => {
   });
 
   const [opciones, setOpciones] = useState({
-    monedas: [],
     idiomas: [
       { codigo: 'es', nombre: 'Español' },
       { codigo: 'en', nombre: 'English' },
@@ -34,13 +32,8 @@ const PreferenciasForm = () => {
       try {
         setCargando(true);
         
-        // Cargar monedas disponibles
-        const monedasRes = await axios.get('http://ecomaravillas.duckdns.org:3001/api/monedas');
-        
         // Cargar preferencias del usuario si existen
         const preferenciasRes = await axios.get(`http://ecomaravillas.duckdns.org:3001/api/cliente/preferencias/${user.id_usuario}`);
-        
-        setOpciones(prev => ({ ...prev, monedas: monedasRes.data || [] }));
         
         if (preferenciasRes.data) {
           setPreferencias(preferenciasRes.data);
@@ -115,22 +108,6 @@ const PreferenciasForm = () => {
                 ))}
               </select>
             </div>
-
-            <div className="form-group">
-              <label>Moneda Preferida</label>
-              <select
-                name="moneda"
-                value={preferencias.moneda}
-                onChange={handleChange}
-              >
-                <option value="">Seleccionar moneda...</option>
-                {opciones.monedas.map(moneda => (
-                  <option key={moneda.id_moneda} value={moneda.id_moneda}>
-                    {moneda.nombre} ({moneda.simbolo})
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
 
           <div className="form-row">
@@ -188,18 +165,6 @@ const PreferenciasForm = () => {
                 onChange={handleChange}
               />
               <span>Notificaciones de promociones</span>
-            </label>
-          </div>
-
-          <div className="checkbox-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                name="notificacionesMantenimiento"
-                checked={preferencias.notificacionesMantenimiento}
-                onChange={handleChange}
-              />
-              <span>Notificaciones de mantenimiento</span>
             </label>
           </div>
         </div>
