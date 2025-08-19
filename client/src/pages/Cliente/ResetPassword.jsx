@@ -24,7 +24,7 @@ const ResetPassword = () => {
     setLoading(true);
     
     try {
-      const response = await axios.post('http://20.83.162.99:3001/api/auth/reset-password', {
+      const response = await axios.post('http://ecomaravillas.duckdns.org:3001/api/auth/reset-password', {
         token,
         newPassword: password
       });

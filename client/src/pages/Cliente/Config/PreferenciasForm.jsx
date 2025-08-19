@@ -35,10 +35,10 @@ const PreferenciasForm = () => {
         setCargando(true);
         
         // Cargar monedas disponibles
-        const monedasRes = await axios.get('http://20.83.162.99:3001/api/monedas');
+        const monedasRes = await axios.get('http://ecomaravillas.duckdns.org:3001/api/monedas');
         
         // Cargar preferencias del usuario si existen
-        const preferenciasRes = await axios.get(`http://20.83.162.99:3001/api/cliente/preferencias/${user.id_usuario}`);
+        const preferenciasRes = await axios.get(`http://ecomaravillas.duckdns.org:3001/api/cliente/preferencias/${user.id_usuario}`);
         
         setOpciones(prev => ({ ...prev, monedas: monedasRes.data || [] }));
         
@@ -70,7 +70,7 @@ const PreferenciasForm = () => {
     
     try {
       setCargando(true);
-      await axios.put(`http://20.83.162.99:3001/api/cliente/preferencias/${user.id_usuario}`, preferencias);
+      await axios.put(`http://ecomaravillas.duckdns.org:3001/api/cliente/preferencias/${user.id_usuario}`, preferencias);
       setMensaje({ text: '✅ Preferencias actualizadas correctamente', type: 'success' });
     } catch (error) {
       console.error('Error actualizando preferencias:', error);

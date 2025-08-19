@@ -23,7 +23,7 @@ const HomeGuest = () => {
 
   useEffect(() => {
     axios
-      .get("http://20.83.162.99:3001/api/admin/stats")
+      .get("http://ecomaravillas.duckdns.org:3001/api/admin/stats")
       .then((res) => setAtraccionesData(res.data.reservasPorAtraccion || []))
       .catch((err) => console.error("Error al cargar datos:", err));
   }, []);

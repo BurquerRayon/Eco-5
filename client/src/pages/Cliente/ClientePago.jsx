@@ -78,7 +78,7 @@ const ClientePago = ({ reserva, onCerrar }) => {
                   
                   // Actualizar estado de la reserva
                   const response = await axios.put(
-                    `http://20.83.162.99:3001/api/reservas/estado/${reserva.id_reserva}`,
+                    `http://ecomaravillas.duckdns.org:3001/api/reservas/estado/${reserva.id_reserva}`,
                     { estado: "confirmado" }
                   );
                   

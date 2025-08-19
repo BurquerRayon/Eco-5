@@ -10,7 +10,7 @@ const ReenviarVerificacion = () => {
     setMensaje('');
 
     try {
-      const res = await axios.post('http://20.83.162.99:3001/api/auth/reenviar-verificacion', { correo });
+      const res = await axios.post('http://ecomaravillas.duckdns.org:3001/api/auth/reenviar-verificacion', { correo });
       setMensaje(`✅ ${res.data.message}`);
     } catch (err) {
       setMensaje(`❌ ${err.response?.data?.message || 'Error al reenviar verificación'}`);

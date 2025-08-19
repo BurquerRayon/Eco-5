@@ -37,8 +37,8 @@ const DatosPersonales = () => {
         setUiState(prev => ({ ...prev, loading: true }));
 
         const [userData, nacionalidades] = await Promise.all([
-          axios.get(`http://20.83.162.99:3001/api/cliente/datos/${user.id_usuario}`),
-          axios.get('http://20.83.162.99:3001/api/cliente/nacionalidades')
+          axios.get(`http://ecomaravillas.duckdns.org:3001/api/cliente/datos/${user.id_usuario}`),
+          axios.get('http://ecomaravillas.duckdns.org:3001/api/cliente/nacionalidades')
         ]);
 
         setFormData({
@@ -94,7 +94,7 @@ const DatosPersonales = () => {
       setUiState(prev => ({ ...prev, message: { text: 'Guardando...', type: 'info' } }));
 
       await axios.put(
-        `http://20.83.162.99:3001/api/cliente/datos/${user.id_usuario}`,
+        `http://ecomaravillas.duckdns.org:3001/api/cliente/datos/${user.id_usuario}`,
         formData
       );
 

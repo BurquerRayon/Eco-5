@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
  * @param {string} nombre - Nombre del usuario
  */
 const sendVerificationEmail = async (to, token, nombre) => {
-  const verificationLink = `http://ecomaravillas.duckdns.org:3000/verify?token=${token}`;
+  const verificationLink = `http://ecomaravillas.duckdns.org:3001:3000/verify?token=${token}`;
 
   const mailOptions = {
     from: process.env.EMAIL_FROM || `"EcoMaravillas" <${process.env.EMAIL_USER}>`,

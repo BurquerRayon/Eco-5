@@ -38,7 +38,7 @@ const ModalCrearFicha = ({ onClose, onFichaCreada }) => {
 
     try {
       const response = await axios.post(
-        "http://ecomaravillas.duckdns.org:3001/api/especimenes",
+        "http://ecomaravillas.duckdns.org:3001:3001/api/especimenes",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

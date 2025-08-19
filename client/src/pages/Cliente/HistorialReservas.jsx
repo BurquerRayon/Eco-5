@@ -11,7 +11,9 @@ import {
   FaAngleDoubleLeft, 
   FaAngleDoubleRight,
   FaSearch,
-  FaHistory
+  FaHistory,
+  FaFileInvoiceDollar,
+  FaPrint
 } from 'react-icons/fa';
 
 const HistorialReservas = () => {
@@ -20,6 +22,9 @@ const HistorialReservas = () => {
   const [loading, setLoading] = useState(true);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [paginaActual, setPaginaActual] = useState(1);
+  const [facturaVisible, setFacturaVisible] = useState(false);
+  const [facturaData, setFacturaData] = useState(null);
+  const [loadingFactura, setLoadingFactura] = useState(false);
   const elementosPorPagina = 10;
   const navigate = useNavigate();
 
@@ -35,11 +40,24 @@ const HistorialReservas = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const id_turista = user?.id_turista;
 
+  // Formatear la fecha de pago en el componente
+const formatFechaPago = (fechaISO) => {
+  if (!fechaISO) return 'No disponible';
+  const fecha = new Date(fechaISO);
+  return fecha.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
   // Cargar atracciones para el combobox
   useEffect(() => {
     const cargarAtracciones = async () => {
       try {
-        const res = await axios.get('http://20.83.162.99:3001/api/atracciones');
+        const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/atracciones');
         setAtracciones(res.data);
       } catch (err) {
         console.error('Error al cargar atracciones:', err);
@@ -108,7 +126,7 @@ const HistorialReservas = () => {
   const cargarHistorial = async () => {
     try {
       setLoading(true);
-      let url = `http://20.83.162.99:3001/api/reservas/turista/${id_turista}?completo=true`;
+      let url = `http://ecomaravillas.duckdns.org:3001/api/reservas/turista/${id_turista}?completo=true`;
       
       const params = new URLSearchParams();
       if (filtros.fechaDesde) params.append('fechaDesde', filtros.fechaDesde);
@@ -137,6 +155,36 @@ const HistorialReservas = () => {
       console.error('Error al cargar historial:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Cargar datos de factura
+  const cargarFactura = async (id_reserva) => {
+    try {
+      setLoadingFactura(true);
+      setFacturaVisible(true);
+      
+      // Obtener datos de la reserva y pago
+      const [reservaRes, pagoRes] = await Promise.all([
+        axios.get(`http://ecomaravillas.duckdns.org:3001/api/reservas/${id_reserva}`),
+        axios.get(`http://ecomaravillas.duckdns.org:3001/api/reservas/${id_reserva}/pago`)
+      ]);
+
+      const reserva = reservaRes.data;
+      const pago = pagoRes.data || {};
+      
+      // Obtener detalles de la reserva
+      const detallesRes = await axios.get(`http://ecomaravillas.duckdns.org:3001/api/reservas/${id_reserva}/detalles`);
+      
+      setFacturaData({
+        ...reserva,
+        pago,
+        detalles: detallesRes.data
+      });
+    } catch (err) {
+      console.error('Error al cargar factura:', err);
+    } finally {
+      setLoadingFactura(false);
     }
   };
 
@@ -230,6 +278,11 @@ const HistorialReservas = () => {
     }
 
     return botones;
+  };
+
+  // Función para imprimir factura
+  const imprimirFactura = () => {
+    window.print();
   };
 
   if (loading) {
@@ -386,6 +439,7 @@ const HistorialReservas = () => {
                     <th>Personas</th>
                     <th>Subtotal</th>
                     <th>Estado</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -401,6 +455,17 @@ const HistorialReservas = () => {
                         <span className={`estado-badge estado-${reserva.estado?.toLowerCase()}`}>
                           {reserva.estado}
                         </span>
+                      </td>
+                      <td className="acciones-reserva">
+                        {reserva.estado === 'confirmado' && (
+                          <button
+                            onClick={() => cargarFactura(reserva.id_reserva)}
+                            className="btn-factura"
+                            title="Ver factura"
+                          >
+                            <FaFileInvoiceDollar />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -457,6 +522,101 @@ const HistorialReservas = () => {
           </>
         )}
       </main>
+
+      {/* Modal de Factura */}
+      {facturaVisible && (
+        <div className="modal-factura">
+          <div className="modal-contenido">
+            <div className="modal-header">
+              <h2>Factura de Reserva</h2>
+              <button 
+                onClick={() => setFacturaVisible(false)}
+                className="btn-cerrar-modal"
+              >
+                &times;
+              </button>
+            </div>
+            
+            {loadingFactura ? (
+              <div className="loading-factura">
+                <div className="spinner"></div>
+                <p>Cargando factura...</p>
+              </div>
+            ) : (
+              <div className="factura-container">
+                <div className="factura-header">
+                  <div className="factura-info">
+                    <h3>EcoMaravillas Park</h3>
+                    <p>RIF: J-123456789</p>
+                    <p>Av. Principal, Parque Nacional</p>
+                    <p>Teléfono: +58 123-4567890</p>
+                  </div>
+                  
+                  <div className="factura-datos">
+                    <h3>Factura #F-{facturaData?.id_reserva}</h3>
+                    <p><strong>Fecha:</strong> {new Date().toLocaleDateString()}</p>
+                    <p><strong>Cliente:</strong> {user?.nombre} {user?.apellido}</p>
+                    <p><strong>Cédula/Pasaporte:</strong> {user?.cedula || 'N/A'}</p>
+                  </div>
+                </div>
+                
+                <div className="factura-detalles">
+                  <h4>Detalles de la Reserva</h4>
+                  <table className="factura-table">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Atracción</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {facturaData?.detalles?.map((detalle, idx) => (
+                        <tr key={idx}>
+                          <td>{detalle.fecha?.split('T')[0]}</td>
+                          <td>{formatearHora(detalle.hora)}</td>
+                          <td>{detalle.nombre_atraccion}</td>
+                          <td>{detalle.cantidad}</td>
+                          <td>${detalle.tarifa_unitaria?.toFixed(2)}</td>
+                          <td>${detalle.subtotal?.toFixed(2)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div className="factura-totales">
+                  <div className="totales-columna">
+                    <p><strong>Subtotal:</strong> ${facturaData?.total_pago_estimado?.toFixed(2)}</p>
+                    <p><strong>IVA (16%):</strong> ${(facturaData?.total_pago_estimado * 0.16).toFixed(2)}</p>
+                    <p className="total-final"><strong>Total:</strong> ${(facturaData?.total_pago_estimado * 1.16).toFixed(2)}</p>
+                  </div>
+                  
+                  <div className="totales-columna">
+                    <h4>Información de Pago</h4>
+                    <p><strong>Método:</strong> {facturaData?.pago?.metodo_pago || 'PayPal'}</p>
+                    <p><strong>Fecha Pago:</strong> <span className="factura-fecha">{formatFechaPago(facturaData?.pago?.fecha_pago)}</span></p>
+                    <p><strong>Estado:</strong> {facturaData?.pago?.estado || 'Confirmado'}</p>
+                  </div>
+                </div>
+
+                <div className="factura-acciones">
+                  <button 
+                    onClick={imprimirFactura}
+                    className="btn-imprimir"
+                  >
+                    <FaPrint /> Imprimir Factura
+                  </button>
+                </div>
+               <p>¡Gracias por su visita a EcoMaravillas Park!</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

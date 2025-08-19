@@ -16,7 +16,7 @@ const PermisosConfig = () => {
 
   const fetchPermisos = async () => {
     try {
-      const res = await axios.get('http://20.83.162.99:3001/api/permisos');
+      const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/permisos');
       setPermisos(res.data);
     } catch (err) {
       console.error('Error al obtener permisos:', err);
@@ -35,10 +35,10 @@ const PermisosConfig = () => {
     e.preventDefault();
     try {
       if (editandoId) {
-        await axios.put(`http://20.83.162.99:3001/api/permisos/${editandoId}`, form);
+        await axios.put(`http://ecomaravillas.duckdns.org:3001/api/permisos/${editandoId}`, form);
         setMensaje('✅ Permiso actualizado');
       } else {
-        await axios.post('http://20.83.162.99:3001/api/permisos', form);
+        await axios.post('http://ecomaravillas.duckdns.org:3001/api/permisos', form);
         setMensaje('✅ Permiso creado');
       }
       setForm({ nombre_permiso: '', descripcion: '' });
@@ -69,7 +69,7 @@ const PermisosConfig = () => {
           label: 'Sí',
           onClick: async () => {
             try {
-              await axios.delete(`http://20.83.162.99:3001/api/permisos/${id}`);
+              await axios.delete(`http://ecomaravillas.duckdns.org:3001/api/permisos/${id}`);
               setMensaje('✅ Permiso eliminado');
               fetchPermisos();
               setTimeout(() => setMensaje(''), 3000);

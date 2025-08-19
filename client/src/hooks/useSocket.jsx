@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
-const useSocket = (serverPath = 'http://20.83.162.99:3001') => {
+const useSocket = (serverPath = 'http://ecomaravillas.duckdns.org:3001') => {
   const socket = useRef(null);
 
   useEffect(() => {

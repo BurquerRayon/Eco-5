@@ -19,7 +19,7 @@ const ReservasPagadas = () => {
 
   useEffect(() => {
     axios
-      .get("http://20.83.162.99:3001/api/reservas/guias")
+      .get("http://ecomaravillas.duckdns.org:3001/api/reservas/guias")
       .then((res) => {
         setReservas(res.data);
       })

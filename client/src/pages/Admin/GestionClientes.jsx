@@ -39,8 +39,8 @@ const GestionClientes = () => {
     try {
       setLoading(true);
       const [clientesRes, nacionalidadesRes] = await Promise.all([
-        axios.get('http://20.83.162.99:3001/api/cliente'),
-        axios.get('http://20.83.162.99:3001/api/nacionalidades')
+        axios.get('http://ecomaravillas.duckdns.org:3001/api/cliente'),
+        axios.get('http://ecomaravillas.duckdns.org:3001/api/nacionalidades')
       ]);
 
       setClientes(clientesRes.data);
@@ -155,10 +155,10 @@ const GestionClientes = () => {
       }
 
       if (editando) {
-        await axios.put(`http://20.83.162.99:3001/api/cliente/datos/${clienteActual.id_usuario}`, datosEnvio);
+        await axios.put(`http://ecomaravillas.duckdns.org:3001/api/cliente/datos/${clienteActual.id_usuario}`, datosEnvio);
         mostrarMensaje('Cliente actualizado correctamente', 'success');
       } else {
-        await axios.post('http://20.83.162.99:3001/api/cliente', datosEnvio);
+        await axios.post('http://ecomaravillas.duckdns.org:3001/api/cliente', datosEnvio);
         mostrarMensaje('Cliente creado correctamente', 'success');
       }
 
@@ -177,7 +177,7 @@ const GestionClientes = () => {
     if (!window.confirm('¿Estás seguro de eliminar este cliente?')) return;
 
     try {
-      await axios.delete(`http://20.83.162.99:3001/api/admin/usuarios/${id}`);
+      await axios.delete(`http://ecomaravillas.duckdns.org:3001/api/admin/usuarios/${id}`);
       mostrarMensaje('Cliente eliminado correctamente', 'success');
       cargarDatos();
     } catch (error) {

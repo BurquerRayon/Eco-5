@@ -20,7 +20,7 @@ const AtraccionesConfig = () => {
   const fetchAtracciones = async () => {
     try {
       setCargando(true);
-      const res = await axios.get('http://20.83.162.99:3001/api/atracciones');
+      const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/atracciones');
       setAtracciones(res.data);
       setAtraccionesFiltradas(res.data);
       setError(null);
@@ -36,7 +36,7 @@ const AtraccionesConfig = () => {
     const fetchAtracciones = async () => {
       try {
         setCargando(true);
-        const res = await axios.get('http://20.83.162.99:3001/api/atracciones');
+        const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/atracciones');
         setAtracciones(res.data);
         setError(null);
       } catch (err) {
@@ -59,10 +59,10 @@ const AtraccionesConfig = () => {
     e.preventDefault();
     try {
       if (editandoId) {
-        await axios.put(`http://20.83.162.99:3001/api/atracciones/${editandoId}`, form);
+        await axios.put(`http://ecomaravillas.duckdns.org:3001/api/atracciones/${editandoId}`, form);
         setMensaje('Atracción actualizada correctamente');
       } else {
-        await axios.post('http://20.83.162.99:3001/api/atracciones', form);
+        await axios.post('http://ecomaravillas.duckdns.org:3001/api/atracciones', form);
         setMensaje('Atracción creada exitosamente');
       }
 
@@ -98,7 +98,7 @@ const AtraccionesConfig = () => {
           label: 'Sí',
           onClick: async () => {
             try {
-              await axios.delete(`http://20.83.162.99:3001/api/atracciones/${id}`);
+              await axios.delete(`http://ecomaravillas.duckdns.org:3001/api/atracciones/${id}`);
               setMensaje('Atracción eliminada correctamente');
               fetchAtracciones();
               setTimeout(() => setMensaje(''), 3000);

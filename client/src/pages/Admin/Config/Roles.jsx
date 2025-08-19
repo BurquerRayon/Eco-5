@@ -16,7 +16,7 @@ const RolesConfig = () => {
 
   const fetchRoles = async () => {
     try {
-      const res = await axios.get('http://20.83.162.99:3001/api/roles');
+      const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/roles');
       setRoles(res.data);
     } catch (err) {
       console.error('Error al obtener roles:', err);
@@ -35,10 +35,10 @@ const RolesConfig = () => {
     e.preventDefault();
     try {
       if (editandoId) {
-        await axios.put(`http://20.83.162.99:3001/api/roles/${editandoId}`, form);
+        await axios.put(`http://ecomaravillas.duckdns.org:3001/api/roles/${editandoId}`, form);
         setMensaje('✅ Rol actualizado');
       } else {
-        await axios.post('http://20.83.162.99:3001/api/roles', form);
+        await axios.post('http://ecomaravillas.duckdns.org:3001/api/roles', form);
         setMensaje('✅ Rol creado');
       }
       setForm({ nombre: '', descripcion: '' });
@@ -67,7 +67,7 @@ const RolesConfig = () => {
           label: 'Sí',
           onClick: async () => {
             try {
-              await axios.delete(`http://20.83.162.99:3001/api/roles/${id}`);
+              await axios.delete(`http://ecomaravillas.duckdns.org:3001/api/roles/${id}`);
               setMensaje('✅ Rol eliminado correctamente');
               fetchRoles();
               setTimeout(() => setMensaje(''), 3000);

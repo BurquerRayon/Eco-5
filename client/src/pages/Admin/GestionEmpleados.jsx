@@ -42,8 +42,8 @@ const GestionEmpleados = () => {
     try {
       setLoading(true);
       const [empleadosRes, nacionalidadesRes] = await Promise.all([
-        axios.get('http://20.83.162.99:3001/api/empleados'),
-        axios.get('http://20.83.162.99:3001/api/nacionalidades')
+        axios.get('http://ecomaravillas.duckdns.org:3001/api/empleados'),
+        axios.get('http://ecomaravillas.duckdns.org:3001/api/nacionalidades')
       ]);
 
       setEmpleados(empleadosRes.data);
@@ -169,10 +169,10 @@ const GestionEmpleados = () => {
       }
 
       if (editando) {
-        await axios.put(`http://20.83.162.99:3001/api/empleados/${empleadoActual.id_usuario}`, datosEnvio);
+        await axios.put(`http://ecomaravillas.duckdns.org:3001/api/empleados/${empleadoActual.id_usuario}`, datosEnvio);
         mostrarMensaje('Empleado actualizado correctamente', 'success');
       } else {
-        await axios.post('http://20.83.162.99:3001/api/empleados', datosEnvio);
+        await axios.post('http://ecomaravillas.duckdns.org:3001/api/empleados', datosEnvio);
         mostrarMensaje('Empleado creado correctamente', 'success');
       }
 
@@ -191,7 +191,7 @@ const GestionEmpleados = () => {
     if (!window.confirm('¿Estás seguro de eliminar este empleado?')) return;
 
     try {
-      await axios.delete(`http://20.83.162.99:3001/api/empleados/${id}`);
+      await axios.delete(`http://ecomaravillas.duckdns.org:3001/api/empleados/${id}`);
       mostrarMensaje('Empleado eliminado correctamente', 'success');
       cargarDatos();
     } catch (error) {

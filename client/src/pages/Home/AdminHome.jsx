@@ -17,7 +17,7 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    axios.get('http://20.83.162.99:3001/api/admin/stats')
+    axios.get('http://ecomaravillas.duckdns.org:3001/api/admin/stats')
       .then(res => setEstadisticas(res.data))
       .catch(err => console.error('Error al cargar estadísticas:', err));
   }, []);

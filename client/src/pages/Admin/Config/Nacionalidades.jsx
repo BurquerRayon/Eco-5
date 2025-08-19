@@ -16,7 +16,7 @@ const NacionalidadesConfig = () => {
 
   const fetchNacionalidades = async () => {
     try {
-      const res = await axios.get('http://20.83.162.99:3001/api/nacionalidades');
+      const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/nacionalidades');
       setNacionalidades(res.data);
     } catch (err) {
       console.error('Error al obtener nacionalidades:', err);
@@ -35,10 +35,10 @@ const NacionalidadesConfig = () => {
     e.preventDefault();
     try {
       if (editandoId) {
-        await axios.put(`http://20.83.162.99:3001/api/nacionalidades/${editandoId}`, form);
+        await axios.put(`http://ecomaravillas.duckdns.org:3001/api/nacionalidades/${editandoId}`, form);
         setMensaje('✅ Nacionalidad actualizada');
       } else {
-        await axios.post('http://20.83.162.99:3001/api/nacionalidades', form);
+        await axios.post('http://ecomaravillas.duckdns.org:3001/api/nacionalidades', form);
         setMensaje('✅ Nacionalidad creada');
       }
       setForm({ nombre: '', codigo_iso: '' });
@@ -67,7 +67,7 @@ const NacionalidadesConfig = () => {
           label: 'Sí',
           onClick: async () => {
             try {
-              await axios.delete(`http://20.83.162.99:3001/api/nacionalidades/${id}`);
+              await axios.delete(`http://ecomaravillas.duckdns.org:3001/api/nacionalidades/${id}`);
               setMensaje('✅ Nacionalidad eliminada correctamente');
               fetchNacionalidades();
               setTimeout(() => setMensaje(''), 3000);

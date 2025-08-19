@@ -37,7 +37,7 @@ const DisponibilidadHorarios = ({ idAtraccion, fecha, horarioSeleccionado }) => 
     setCargando(true);
     try {
       const response = await axios.get(
-        `http://20.83.162.99:3001/api/reservas/disponibilidad/${idAtraccion}/${fecha}`
+        `http://ecomaravillas.duckdns.org:3001/api/reservas/disponibilidad/${idAtraccion}/${fecha}`
       );
       setDisponibilidad(response.data);
     } catch (error) {
