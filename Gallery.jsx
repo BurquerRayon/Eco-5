@@ -47,7 +47,7 @@ const Galeria = () => {
 
     try {
       await axios.delete(
-        `http://ecomaravillas.duckdns.org:3001:3001/api/especimenes/${idFicha}`
+        `http://ecomaravillas.duckdns.org:3001/api/especimenes/${idFicha}`
       );
       alert("Ficha eliminada correctamente ✅");
 
@@ -233,7 +233,7 @@ const Galeria = () => {
               onFichaActualizada={async () => {
                 try {
                   const res = await axios.get(
-                    "http://ecomaravillas.duckdns.org:3001:3001/api/especimenes"
+                    "http://ecomaravillas.duckdns.org:3001/api/especimenes"
                   );
                   setImagenesMezcladas(mezclarArray(res.data));
                 } catch (err) {

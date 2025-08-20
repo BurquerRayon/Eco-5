@@ -2,13 +2,36 @@ const express = require("express");
 const router = express.Router();
 const { sql, poolConnect, pool } = require("../db/connection"); // ajusta la ruta si es necesario
 
-function generarBloques(inicio, fin) {
+function generarBloques(inicio, fin, fechaSeleccionada = null) {
   const bloques = [];
   let [h, m] = inicio.split(":").map(Number);
   const [hFin] = fin.split(":").map(Number);
+  
+  // Si es para hoy, obtener la hora actual
+  const ahora = new Date();
+  const esHoy = fechaSeleccionada && 
+    new Date(fechaSeleccionada).toDateString() === ahora.toDateString();
+  
+  const horaActual = esHoy ? ahora.getHours() : -1;
+  const minutoActual = esHoy ? ahora.getMinutes() : -1;
 
   while (h < hFin || (h === hFin && m === 0)) {
     if (!(h === 17 && m === 0)) {
+      // Si es hoy, solo incluir bloques futuros (con al menos 1 hora de anticipación)
+      if (esHoy) {
+        const horaBloque = h + (m >= 30 ? 0.5 : 0);
+        const horaLimite = horaActual + (minutoActual >= 30 ? 1.5 : 1);
+        
+        if (horaBloque < horaLimite) {
+          m += 30;
+          if (m >= 60) {
+            h += 1;
+            m = 0;
+          }
+          continue;
+        }
+      }
+      
       const hora = `${String(h).padStart(2, "0")}:${String(m).padStart(
         2,
         "0"
@@ -202,7 +225,7 @@ router.put("/editar/:id_reserva", async (req, res) => {
       .request()
       .input("id_reserva", id_reserva)
       .input("id_turista", id_turista).query(`
-        SELECT estado, ediciones 
+        SELECT estado, ediciones, pagado 
         FROM Reservas 
         WHERE id_reserva = @id_reserva AND id_turista = @id_turista
       `);
@@ -213,22 +236,53 @@ router.put("/editar/:id_reserva", async (req, res) => {
         .json({ message: "Reserva no encontrada o no pertenece al usuario" });
     }
 
-    const { estado, ediciones } = reservaCheck.recordset[0];
+    const { estado, ediciones, pagado } = reservaCheck.recordset[0];
 
     if (estado === "cancelado") {
       return res
         .status(400)
         .json({ message: "No se pueden editar reservas canceladas" });
     }
-    if (estado === "confirmado" && ediciones >= 1) {
-      return res
-        .status(400)
-        .json({ message: "Solo puedes editar 1 vez las reservas confirmadas" });
-    }
-    if (estado === "pendiente" && ediciones >= 2) {
-      return res.status(400).json({
-        message: "Solo puedes editar máximo 2 veces las reservas pendientes",
-      });
+
+    // Si la reserva está pagada, solo permitir cambio de fecha
+    if (pagado === 1 || pagado === true) {
+      // Verificar que solo se está cambiando la fecha
+      const detallesOriginales = await pool
+        .request()
+        .input("id_reserva", id_reserva)
+        .query(`
+          SELECT id_atraccion, cantidad, tarifa_unitaria, hora
+          FROM Reserva_Detalles 
+          WHERE id_reserva = @id_reserva
+        `);
+
+      for (let i = 0; i < detalles.length; i++) {
+        const detalleNuevo = detalles[i];
+        const detalleOriginal = detallesOriginales.recordset[i];
+        
+        if (detalleOriginal && (
+          detalleNuevo.id_atraccion !== detalleOriginal.id_atraccion ||
+          detalleNuevo.cantidad !== detalleOriginal.cantidad ||
+          detalleNuevo.tarifa_unitaria !== detalleOriginal.tarifa_unitaria ||
+          detalleNuevo.hora !== detalleOriginal.hora
+        )) {
+          return res.status(400).json({ 
+            message: "En reservas pagadas solo se puede cambiar la fecha" 
+          });
+        }
+      }
+    } else {
+      // Aplicar las reglas normales de edición
+      if (estado === "confirmado" && ediciones >= 1) {
+        return res
+          .status(400)
+          .json({ message: "Solo puedes editar 1 vez las reservas confirmadas" });
+      }
+      if (estado === "pendiente" && ediciones >= 2) {
+        return res.status(400).json({
+          message: "Solo puedes editar máximo 2 veces las reservas pendientes",
+        });
+      }
     }
 
     // Agrupar detalles por bloque único
@@ -592,14 +646,16 @@ router.put("/estado/:id", async (req, res) => {
   try {
     await poolConnect;
 
+    // Si el estado es confirmado, también actualizar pagado a 1
+    const updateQuery = estado === "confirmado" 
+      ? `UPDATE Reservas SET estado = @estado, pagado = 1 WHERE id_reserva = @id_reserva`
+      : `UPDATE Reservas SET estado = @estado WHERE id_reserva = @id_reserva`;
+
     const result = await pool
       .request()
       .input("id_reserva", id)
-      .input("estado", estado).query(`
-        UPDATE Reservas
-        SET estado = @estado
-        WHERE id_reserva = @id_reserva
-      `);
+      .input("estado", estado)
+      .query(updateQuery);
 
     if (result.rowsAffected[0] === 0) {
       return res.status(404).json({ message: "Reserva no encontrada" });
@@ -631,8 +687,8 @@ router.get("/disponibilidad/:id_atraccion/:fecha", async (req, res) => {
 
     const capacidadMaxima = atraccionResult.recordset[0].max_personas;
 
-    // Definir bloques de horario
-    const bloques = generarBloques("09:00", "17:00");
+    // Definir bloques de horario considerando si es para hoy
+    const bloques = generarBloques("09:00", "17:00", fecha);
 
     // Consultar cantidad de personas reservadas por hora
     const reservasResult = await pool

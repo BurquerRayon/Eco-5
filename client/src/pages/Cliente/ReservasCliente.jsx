@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useSocket from '../../hooks/useSocket';
@@ -17,6 +17,7 @@ const ReservaCliente = () => {
   const [reservaEditando, setReservaEditando] = useState(null);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [reservaParaPagar, setReservaParaPagar] = useState(null);
+  const [necesitaRecarga, setNecesitaRecarga] = useState(false);
 
   // Estados para filtros y paginación
   const [filtroFecha, setFiltroFecha] = useState('');
@@ -97,8 +98,17 @@ const ReservaCliente = () => {
   // Escuchar eventos Socket.IO para actualizar historial en tiempo real
   useEffect(() => {
     const handleReservaChange = (data) => {
-      // Solo actualizar si es del usuario actual
       if (id_turista && data) {
+        cargarHistorial();
+      }
+    };
+
+    const handleCambioEstadoReserva = (data) => {
+      if (id_turista && data) {
+        // Verificar si el cambio es de pendiente a confirmado
+        if (data.estado_anterior === 'pendiente' && data.estado_nuevo === 'confirmado') {
+          setNecesitaRecarga(true);
+        }
         cargarHistorial();
       }
     };
@@ -106,13 +116,27 @@ const ReservaCliente = () => {
     on('reserva_creada', handleReservaChange);
     on('reserva_actualizada', handleReservaChange);
     on('reserva_cancelada', handleReservaChange);
+    on('reserva_estado_cambiado', handleCambioEstadoReserva);
 
     return () => {
       off('reserva_creada', handleReservaChange);
       off('reserva_actualizada', handleReservaChange);
       off('reserva_cancelada', handleReservaChange);
+      off('reserva_estado_cambiado', handleCambioEstadoReserva);
     };
   }, [id_turista, on, off]);
+
+  // Efecto para manejar la recarga cuando sea necesaria
+  useEffect(() => {
+    if (necesitaRecarga) {
+      const timer = setTimeout(() => {
+        cargarHistorial();
+        setNecesitaRecarga(false);
+      }, 20);
+
+      return () => clearTimeout(timer);
+    }
+  }, [necesitaRecarga]);
 
   // Aplicar filtros al historial
   useEffect(() => {
@@ -348,6 +372,14 @@ const ReservaCliente = () => {
       console.error('Error al cargar historial:', err);
     }
   };
+
+  // Manejar cierre del componente de pago
+  const handleCierrePago = useCallback((exitoso) => {
+    setReservaParaPagar(null);
+    if (exitoso) {
+      setNecesitaRecarga(true);
+    }
+  }, []);
 
   // Calcular total
   const total = detalles.reduce((sum, d) => sum + d.subtotal, 0);
@@ -686,10 +718,11 @@ const ReservaCliente = () => {
           </span>
         </div>
       )}
+
       {reservaParaPagar && (
         <ClientePago 
           reserva={reservaParaPagar} 
-          onCerrar={() => setReservaParaPagar(null)} 
+          onCerrar={handleCierrePago} 
         />
       )}
     </div>
