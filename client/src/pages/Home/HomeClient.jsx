@@ -26,7 +26,7 @@ const HomeClient = () => {
 
   const cargarEstadisticas = () => {
     axios
-      .get("http://ecomaravillas.duckdns.org:3001/api/admin/stats")
+      .get("http://ecomaravilla2.duckdns.org:3001/api/admin/stats")
       .then((res) => setAtraccionesData(res.data.reservasPorAtraccion || []))
       .catch((err) => console.error("Error al cargar datos:", err));
   };

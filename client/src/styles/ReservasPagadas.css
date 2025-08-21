@@ -1,0 +1,122 @@
+/* Contenedor principal */
+.contenedor-reservas {
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+}
+
+.contenedor-reservas h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* 🔎 Filtros */
+.filtros-reservas {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filtros-reservas select,
+.filtros-reservas input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 140px;
+}
+
+/* 🎛 Botones pequeños y compactos */
+.filtros-reservas button {
+  padding: 6px 34px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: 0.7s;
+  flex: 0; /* evita que se estiren */
+}
+
+.btn-aplicar {
+  background-color: #28a745;
+  color: #fff;
+}
+.btn-aplicar:hover {
+  background-color: #1e7e34;
+}
+
+.btn-limpiar {
+  background-color: #ffc107;
+  color: #fff;
+}
+.btn-limpiar:hover {
+  background-color: #e0a800;
+}
+
+.btn-pdf {
+  background-color: #007bff;
+  color: #fff;
+}
+.btn-pdf:hover {
+  background-color: #0056b3;
+}
+
+/* 📊 Tabla */
+.tabla-reservas {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 25px;
+}
+
+.tabla-reservas th,
+.tabla-reservas td {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+.tabla-reservas th {
+  background: #f4f6f9;
+  font-weight: bold;
+}
+
+.tabla-reservas tr:hover {
+  background: #f9fafc;
+}
+
+/* ⏩ Paginación */
+.paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.paginacion button {
+  padding: 8px 22px;
+  border: none;
+  border-radius: 6px;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px;
+  flex: 0;
+}
+
+.paginacion button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.paginacion button:hover:not(:disabled) {
+  background: #0056b3;
+}

@@ -522,7 +522,7 @@ router.post('/forgot-password', async (req, res) => {
       `);
 
     // Enviar email con el enlace de recuperación
-    const resetLink = `http://ecomaravillas.duckdns.org:3001/reset-password?token=${token}`;
+    const resetLink = `http://ecomaravilla2.duckdns.org:3001/reset-password?token=${token}`;
     await sendPasswordResetEmail(email, resetLink);
 
     res.json({ 

@@ -50,7 +50,7 @@ const ModalEditarFicha = ({ ficha, onClose, onFichaActualizada }) => {
 
     try {
       const res = await axios.put(
-        `http://ecomaravillas.duckdns.org:3001/api/especimenes/${formData.id}`,
+        `http://ecomaravilla2.duckdns.org:3001/api/especimenes/${formData.id}`,
         form,
         {
           headers: { "Content-Type": "multipart/form-data" },

@@ -1,6 +1,6 @@
 // scripts/cargarFichas.js
 const axios = require("axios");
-const API_URL = "http://ecomaravillas.duckdns.org:3001/api/especimenes";
+const API_URL = "http://ecomaravilla2.duckdns.org:3001/api/especimenes";
 const fichas = require("./fichas");
 
 // Mapeo inicial de nombres de hábitat a IDs (se actualizará con los IDs reales)

@@ -16,7 +16,7 @@ const ReportesAdmin = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/admin/stats');
+        const res = await axios.get('http://ecomaravilla2.duckdns.org:3001/api/admin/stats');
         setStats(res.data);
       } catch (err) {
         console.error('Error al obtener estadísticas:', err);

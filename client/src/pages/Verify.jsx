@@ -17,7 +17,7 @@ const Verify = () => {
       return;
     }
 
-    axios.get(`http://ecomaravillas.duckdns.org:3001/api/auth/verify?token=${token}`)
+    axios.get(`http://ecomaravilla2.duckdns.org:3001/api/auth/verify?token=${token}`)
       .then(res => {
         setMensaje(res.data.message || '✅ Verificado correctamente');
         setTimeout(() => navigate('/login'), 2500);

@@ -36,7 +36,7 @@ const DocumentosForm = () => {
     try {
       setCargando(true);
       const response = await axios.get(
-        `http://ecomaravillas.duckdns.org:3001/api/cliente/documentos/${user.id_usuario}`
+        `http://ecomaravilla2.duckdns.org:3001/api/cliente/documentos/${user.id_usuario}`
       );
       
       if (response.data && response.data.length > 0) {
@@ -195,7 +195,7 @@ const DocumentosForm = () => {
     try {
       setCargando(true);
       await axios.post(
-        `http://ecomaravillas.duckdns.org:3001/api/cliente/documentos/${user.id_usuario}`,
+        `http://ecomaravilla2.duckdns.org:3001/api/cliente/documentos/${user.id_usuario}`,
         formDataToSend,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );

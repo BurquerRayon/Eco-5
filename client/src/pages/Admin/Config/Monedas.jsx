@@ -16,7 +16,7 @@ const MonedasConfig = () => {
 
   const fetchMonedas = async () => {
     try {
-      const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/monedas');
+      const res = await axios.get('http://ecomaravilla2.duckdns.org:3001/api/monedas');
       setMonedas(res.data);
     } catch (err) {
       console.error('Error al obtener monedas:', err);
@@ -40,10 +40,10 @@ const MonedasConfig = () => {
 
     try {
       if (editandoId) {
-        await axios.put(`http://ecomaravillas.duckdns.org:3001/api/monedas/${editandoId}`, datos);
+        await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/monedas/${editandoId}`, datos);
         setMensaje('✅ Moneda actualizada correctamente');
       } else {
-        await axios.post('http://ecomaravillas.duckdns.org:3001/api/monedas', datos);
+        await axios.post('http://ecomaravilla2.duckdns.org:3001/api/monedas', datos);
         setMensaje('✅ Moneda creada exitosamente');
       }
 
@@ -78,7 +78,7 @@ const MonedasConfig = () => {
           label: 'Sí',
           onClick: async () => {
             try {
-              await axios.delete(`http://ecomaravillas.duckdns.org:3001/api/monedas/${id}`);
+              await axios.delete(`http://ecomaravilla2.duckdns.org:3001/api/monedas/${id}`);
               setMensaje('✅ Moneda eliminada correctamente');
               fetchMonedas();
               setTimeout(() => setMensaje(''), 3000);

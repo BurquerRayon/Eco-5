@@ -18,7 +18,7 @@ const HorarioReservasConfig = () => {
   useEffect(() => {
     const cargarHorario = async () => {
       try {
-        const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/config/horario-reservas');
+        const res = await axios.get('http://ecomaravilla2.duckdns.org:3001/api/config/horario-reservas');
         const [hIni, mIni] = res.data.hora_inicio.split(':');
         const [hFin, mFin] = res.data.hora_fin.split(':');
         setHoraInicio(hIni);
@@ -37,7 +37,7 @@ const HorarioReservasConfig = () => {
     const hora_inicio = `${horaInicio}:${minutoInicio}`;
     const hora_fin = `${horaFin}:${minutoFin}`;
     try {
-      await axios.put('http://ecomaravillas.duckdns.org:3001/api/config/horario-reservas', { hora_inicio, hora_fin });
+      await axios.put('http://ecomaravilla2.duckdns.org:3001/api/config/horario-reservas', { hora_inicio, hora_fin });
       setMensaje('✅ Horario actualizado correctamente');
       setTimeout(() => setMensaje(''), 3000);
     } catch (err) {

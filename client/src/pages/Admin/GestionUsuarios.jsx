@@ -18,7 +18,7 @@ const GestionUsuarios = () => {
   // ====================
   const cargarUsuarios = async () => {
     try {
-      const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/auth/usuarios');
+      const res = await axios.get('http://ecomaravilla2.duckdns.org:3001/api/auth/usuarios');
       setUsuarios(res.data);
     } catch (err) {
       console.error('❌ Error al cargar usuarios:', err);
@@ -27,7 +27,7 @@ const GestionUsuarios = () => {
 
   const cargarRoles = async () => {
     try {
-      const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/roles');
+      const res = await axios.get('http://ecomaravilla2.duckdns.org:3001/api/roles');
       setRoles(res.data);
     } catch (err) {
       console.error('❌ Error al cargar roles:', err);
@@ -50,10 +50,10 @@ const GestionUsuarios = () => {
     e.preventDefault();
     try {
       if (editandoId) {
-        await axios.put(`http://ecomaravillas.duckdns.org:3001/api/auth/usuarios/${editandoId}`, formulario);
+        await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/auth/usuarios/${editandoId}`, formulario);
         setMensaje('✅ Usuario actualizado');
       } else {
-        await axios.post('http://ecomaravillas.duckdns.org:3001/api/auth/crear-usuario', formulario);
+        await axios.post('http://ecomaravilla2.duckdns.org:3001/api/auth/crear-usuario', formulario);
         setMensaje('✅ Usuario creado');
       }
 
@@ -73,7 +73,7 @@ const GestionUsuarios = () => {
   const eliminarUsuario = async (id) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
       try {
-        const res = await axios.delete(`http://ecomaravillas.duckdns.org:3001/api/auth/usuarios/${id}`);
+        const res = await axios.delete(`http://ecomaravilla2.duckdns.org:3001/api/auth/usuarios/${id}`);
         setMensaje(res.data.message || '🗑️ Usuario eliminado');
         cargarUsuarios();
       } catch (err) {
@@ -162,7 +162,7 @@ const GestionUsuarios = () => {
                     value={u.id_rol}
                     onChange={async (e) => {
                       try {
-                        await axios.put(`http://ecomaravillas.duckdns.org:3001/api/auth/usuarios/${u.id_usuario}`, {
+                        await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/auth/usuarios/${u.id_usuario}`, {
                           nombre: u.nombre,
                           correo: u.correo,
                           id_rol: e.target.value

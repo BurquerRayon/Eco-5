@@ -37,7 +37,7 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post('http://ecomaravillas.duckdns.org:3001/api/auth/login', formData);
+      const response = await axios.post('http://ecomaravilla2.duckdns.org:3001/api/auth/login', formData);
       
       if (response.data.success) {
         const { token, user: responseUser } = response.data;

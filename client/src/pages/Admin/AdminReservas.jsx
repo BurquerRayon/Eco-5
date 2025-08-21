@@ -19,7 +19,7 @@ const AdminReservas = () => {
 
   const obtenerReservas = async () => {
     try {
-      const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/reservas/admin');
+      const res = await axios.get('http://ecomaravilla2.duckdns.org:3001/api/reservas/admin');
       setReservas(res.data);
     } catch (err) {
       console.error('Error al cargar reservas:', err);
@@ -31,7 +31,7 @@ const cambiarEstadoReserva = async (id, nuevoEstado) => {
   if (!confirmacion) return;
 
   try {
-    await axios.put(`http://ecomaravillas.duckdns.org:3001/api/reservas/estado/${id}`, { estado: nuevoEstado });
+    await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/reservas/estado/${id}`, { estado: nuevoEstado });
     obtenerReservas();
   } catch (err) {
     console.error('Error al cambiar estado:', err);

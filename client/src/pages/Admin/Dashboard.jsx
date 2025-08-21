@@ -25,7 +25,7 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    fetch('http://ecomaravillas.duckdns.org:3001/api/reservas/estadisticas')
+    fetch('http://ecomaravilla2.duckdns.org:3001/api/reservas/estadisticas')
       .then(res => res.json())
       .then(data => {
         console.log('Respuesta API reservas:', data);

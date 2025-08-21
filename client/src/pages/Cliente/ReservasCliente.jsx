@@ -73,8 +73,8 @@ const ReservaCliente = () => {
     const cargarDatosIniciales = async () => {
       try {
         const [atraccionesRes, horariosRes] = await Promise.all([
-          axios.get('http://ecomaravillas.duckdns.org:3001/api/atracciones'),
-          axios.get('http://ecomaravillas.duckdns.org:3001/api/config/horario-reservas')
+          axios.get('http://ecomaravilla2.duckdns.org:3001/api/atracciones'),
+          axios.get('http://ecomaravilla2.duckdns.org:3001/api/config/horario-reservas')
         ]);
 
         setAtracciones(atraccionesRes.data);
@@ -238,8 +238,8 @@ const ReservaCliente = () => {
       setMensaje('Cargando reserva...');
 
       const [reservaRes, detallesRes] = await Promise.all([
-        axios.get(`http://ecomaravillas.duckdns.org:3001/api/reservas/${id_reserva}`),
-        axios.get(`http://ecomaravillas.duckdns.org:3001/api/reservas/${id_reserva}/detalles`)
+        axios.get(`http://ecomaravilla2.duckdns.org:3001/api/reservas/${id_reserva}`),
+        axios.get(`http://ecomaravilla2.duckdns.org:3001/api/reservas/${id_reserva}/detalles`)
       ]);
 
       const reserva = reservaRes.data;
@@ -294,7 +294,7 @@ const ReservaCliente = () => {
     }
 
     try {
-      const response = await axios.put(`http://ecomaravillas.duckdns.org:3001/api/reservas/cancelar/${id_reserva}`);
+      const response = await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/reservas/cancelar/${id_reserva}`);
       setMensaje(response.data.message || '✅ Reserva cancelada');
       cargarHistorial();
     } catch (err) {
@@ -338,7 +338,7 @@ const ReservaCliente = () => {
       if (modoEdicion && reservaEditando) {
         // Editar reserva existente
         const response = await axios.put(
-          `http://ecomaravillas.duckdns.org:3001/api/reservas/editar/${reservaEditando}`, 
+          `http://ecomaravilla2.duckdns.org:3001/api/reservas/editar/${reservaEditando}`, 
           { id_turista, detalles }
         );
 
@@ -348,7 +348,7 @@ const ReservaCliente = () => {
       } else {
         // Crear nueva reserva
         const response = await axios.post(
-          'http://ecomaravillas.duckdns.org:3001/api/reservas/crear', 
+          'http://ecomaravilla2.duckdns.org:3001/api/reservas/crear', 
           { id_turista, detalles }
         );
 
@@ -366,7 +366,7 @@ const ReservaCliente = () => {
   // Cargar historial de reservas
   const cargarHistorial = async () => {
     try {
-      const res = await axios.get(`http://ecomaravillas.duckdns.org:3001/api/reservas/turista/${id_turista}`);
+      const res = await axios.get(`http://ecomaravilla2.duckdns.org:3001/api/reservas/turista/${id_turista}`);
       setHistorial(res.data);
     } catch (err) {
       console.error('Error al cargar historial:', err);

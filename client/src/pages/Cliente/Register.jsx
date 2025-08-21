@@ -38,7 +38,7 @@ const Register = () => {
     }
 
     try {
-      const res = await axios.post('http://ecomaravillas.duckdns.org:3001/api/auth/register', {
+      const res = await axios.post('http://ecomaravilla2.duckdns.org:3001/api/auth/register', {
         nombre: formData.nombre,
         correo: formData.correo,
         contrasena: formData.contrasena

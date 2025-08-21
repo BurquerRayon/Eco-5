@@ -59,7 +59,7 @@ const SeguridadForm = () => {
 
     try {
       setCargando(true);
-      await axios.put(`http://ecomaravillas.duckdns.org:3001/api/cliente/cambiar-contrasena/${user.id_usuario}`, {
+      await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/cliente/cambiar-contrasena/${user.id_usuario}`, {
         contrasenaActual: formData.contrasenaActual,
         contrasenaNueva: formData.contrasenaNueva
       });
@@ -83,7 +83,7 @@ const SeguridadForm = () => {
 
     try {
       setCargando(true);
-      await axios.put(`http://ecomaravillas.duckdns.org:3001/api/cliente/configuracion-seguridad/${user.id_usuario}`, configuracion);
+      await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/cliente/configuracion-seguridad/${user.id_usuario}`, configuracion);
       setMensaje({ text: '✅ Configuración de seguridad actualizada', type: 'success' });
     } catch (error) {
       setMensaje({

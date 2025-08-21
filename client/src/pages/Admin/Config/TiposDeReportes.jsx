@@ -16,7 +16,7 @@ const ReportesConfig = () => {
 
   const fetchTipos = async () => {
     try {
-      const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/reportes');
+      const res = await axios.get('http://ecomaravilla2.duckdns.org:3001/api/reportes');
       setTipos(res.data);
     } catch (err) {
       console.error('Error al obtener tipos:', err);
@@ -41,10 +41,10 @@ const ReportesConfig = () => {
     e.preventDefault();
     try {
       if (editandoId) {
-        await axios.put(`http://ecomaravillas.duckdns.org:3001/api/reportes/${editandoId}`, form);
+        await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/reportes/${editandoId}`, form);
         setMensaje('✅ Tipo de reporte actualizado');
       } else {
-        await axios.post('http://ecomaravillas.duckdns.org:3001/api/reportes', form);
+        await axios.post('http://ecomaravilla2.duckdns.org:3001/api/reportes', form);
         setMensaje('✅ Tipo de reporte creado');
       }
 
@@ -74,7 +74,7 @@ const ReportesConfig = () => {
           label: 'Sí',
           onClick: async () => {
             try {
-              await axios.delete(`http://ecomaravillas.duckdns.org:3001/api/reportes/${id}`);
+              await axios.delete(`http://ecomaravilla2.duckdns.org:3001/api/reportes/${id}`);
               setMensaje('✅ Tipo de reporte eliminado correctamente');
               fetchTipos();
               setTimeout(() => setMensaje(''), 3000);

@@ -1,7 +1,7 @@
 // Este helper se usa para obtener las fichas desde el backend
 import axios from "axios";
 
-const API_URL = "http://ecomaravillas.duckdns.org:3001/api/especimenes";
+const API_URL = "http://ecomaravilla2.duckdns.org:3001/api/especimenes";
 
 const cargarNuevasFichas = async () => {
   try {

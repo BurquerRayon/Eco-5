@@ -57,7 +57,7 @@ const formatFechaPago = (fechaISO) => {
   useEffect(() => {
     const cargarAtracciones = async () => {
       try {
-        const res = await axios.get('http://ecomaravillas.duckdns.org:3001/api/atracciones');
+        const res = await axios.get('http://ecomaravilla2.duckdns.org:3001/api/atracciones');
         setAtracciones(res.data);
       } catch (err) {
         console.error('Error al cargar atracciones:', err);
@@ -126,7 +126,7 @@ const formatFechaPago = (fechaISO) => {
   const cargarHistorial = async () => {
     try {
       setLoading(true);
-      let url = `http://ecomaravillas.duckdns.org:3001/api/reservas/turista/${id_turista}?completo=true`;
+      let url = `http://ecomaravilla2.duckdns.org:3001/api/reservas/turista/${id_turista}?completo=true`;
       
       const params = new URLSearchParams();
       if (filtros.fechaDesde) params.append('fechaDesde', filtros.fechaDesde);
@@ -166,15 +166,15 @@ const formatFechaPago = (fechaISO) => {
       
       // Obtener datos de la reserva y pago
       const [reservaRes, pagoRes] = await Promise.all([
-        axios.get(`http://ecomaravillas.duckdns.org:3001/api/reservas/${id_reserva}`),
-        axios.get(`http://ecomaravillas.duckdns.org:3001/api/reservas/${id_reserva}/pago`)
+        axios.get(`http://ecomaravilla2.duckdns.org:3001/api/reservas/${id_reserva}`),
+        axios.get(`http://ecomaravilla2.duckdns.org:3001/api/reservas/${id_reserva}/pago`)
       ]);
 
       const reserva = reservaRes.data;
       const pago = pagoRes.data || {};
       
       // Obtener detalles de la reserva
-      const detallesRes = await axios.get(`http://ecomaravillas.duckdns.org:3001/api/reservas/${id_reserva}/detalles`);
+      const detallesRes = await axios.get(`http://ecomaravilla2.duckdns.org:3001/api/reservas/${id_reserva}/detalles`);
       
       setFacturaData({
         ...reserva,

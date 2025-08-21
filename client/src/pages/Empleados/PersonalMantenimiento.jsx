@@ -21,7 +21,7 @@ const PersonalMantenimiento = () => {
 
   useEffect(() => {
     axios
-      .get("http://ecomaravillas.duckdns.org:3001/api/personal/mantenimiento")
+      .get("http://ecomaravilla2.duckdns.org:3001/api/personal/mantenimiento")
       .then((res) => setPersonal(res.data))
       .catch((err) => console.error("Error cargando personal:", err));
   }, []);

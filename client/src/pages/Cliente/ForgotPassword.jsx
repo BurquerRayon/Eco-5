@@ -14,7 +14,7 @@ const ForgotPassword = () => {
     setLoading(true);
     
     try {
-      const response = await axios.post('http://ecomaravillas.duckdns.org:3001/api/auth/forgot-password', { email });
+      const response = await axios.post('http://ecomaravilla2.duckdns.org:3001/api/auth/forgot-password', { email });
       setMessage(response.data.message);
       setTimeout(() => navigate('/login'), 3000);
     } catch (err) {

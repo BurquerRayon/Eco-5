@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import useSocket from '../hooks/useSocket';
-import './DisponibilidadHorarios.css';
+import '../../src/styles/DisponibilidadHorarios.css';
 
 const DisponibilidadHorarios = ({ idAtraccion, fecha, horarioSeleccionado }) => {
   const [disponibilidad, setDisponibilidad] = useState([]);
@@ -37,7 +37,7 @@ const DisponibilidadHorarios = ({ idAtraccion, fecha, horarioSeleccionado }) => 
     setCargando(true);
     try {
       const response = await axios.get(
-        `http://ecomaravillas.duckdns.org:3001/api/reservas/disponibilidad/${idAtraccion}/${fecha}`
+        `http://ecomaravilla2.duckdns.org:3001/api/reservas/disponibilidad/${idAtraccion}/${fecha}`
       );
       setDisponibilidad(response.data);
     } catch (error) {

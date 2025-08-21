@@ -21,7 +21,7 @@ const VerifyModal = ({ email, onSuccess, onClose }) => {
     }
 
     try {
-      const response = await axios.get(`http://ecomaravillas.duckdns.org:3001/api/auth/verify?token=${token}`);
+      const response = await axios.get(`http://ecomaravilla2.duckdns.org:3001/api/auth/verify?token=${token}`);
       setMessage(response.data.message || '✅ Verificación exitosa');
       setTimeout(() => {
         onSuccess();
@@ -38,7 +38,7 @@ const VerifyModal = ({ email, onSuccess, onClose }) => {
     setResendMessage('');
     
     try {
-      const response = await axios.post('http://ecomaravillas.duckdns.org:3001/api/auth/resend-verification', {
+      const response = await axios.post('http://ecomaravilla2.duckdns.org:3001/api/auth/resend-verification', {
         email: email
       });
       

@@ -1,5 +1,5 @@
 {
-  "proxy": "http://ecomaravillas.duckdns.org:3001",
+  "proxy": "http://ecomaravilla2.duckdns.org:3001",
   "name": "client",
   "version": "0.1.0",
   "private": true,

@@ -49,7 +49,7 @@ const ModalEditarFicha = ({ ficha, onClose, onFichaActualizada }) => {
 
     try {
       const res = await fetch(
-        `http://ecomaravillas.duckdns.org:3001/api/especimenes/${formData.id}`,
+        `http://ecomaravilla2.duckdns.org:3001/api/especimenes/${formData.id}`,
         {
           method: "PUT",
           body: form,
