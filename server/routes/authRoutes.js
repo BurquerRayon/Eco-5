@@ -6,9 +6,9 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../utils/email');
 
-// ===========================
-// Registro de usuario
-// ===========================
+// =======================================================
+// Registro un nuevo usuario como y con el rol de turista
+// =======================================================
 router.post('/register', async (req, res) => {
   const { nombre, correo, contrasena } = req.body;
 
@@ -23,9 +23,6 @@ router.post('/register', async (req, res) => {
 
   try {
     await poolConnect;
-
-    // Resto del código de registro permanece igual...
-    // ... [el resto de tu código existente]
 
     // Verificar si ya existe el usuario
     const existe = await pool.request()
@@ -101,7 +98,7 @@ router.post('/register', async (req, res) => {
 });
 
 // ===========================
-// Login de usuario
+// Login de los usuario
 // ===========================
 router.post('/login', async (req, res) => {
   const { correo, contrasena } = req.body;
@@ -214,9 +211,9 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ===========================
-// Verificación de correo
-// ===========================
+// ============================================================
+// Envio de token de Verificación de correo para los clientes
+// ============================================================
 router.get('/verify', async (req, res) => {
   const { token } = req.query;
 
@@ -279,9 +276,9 @@ router.get('/verify', async (req, res) => {
   }
 });
 
-// ===========================
-// Reenviar token de verificación
-// ===========================
+// ==================================================
+// Logica para el Reenvio de tokens de verificación
+// ==================================================
 router.post('/resend-verification', async (req, res) => {
   const { email } = req.body;
 
@@ -345,9 +342,9 @@ router.post('/resend-verification', async (req, res) => {
   }
 });
 
-// ============================
-// Obtener usuarios por parte del administrador
-// ============================
+// =======================================================================
+// Obtener todos los usuarios por y para el usuario de rol administrador
+// =======================================================================
 router.get('/usuarios', async (req, res) => {
   try {
     await poolConnect;
@@ -369,9 +366,9 @@ router.get('/usuarios', async (req, res) => {
   }
 });
 
-// ============================
+// ===================================================
 // Crear usuarios por parte del administrador
-// ============================
+// ===================================================
 router.post('/crear-usuario', async (req, res) => {
   const { nombre, correo, contrasena, id_rol } = req.body;
   if (!nombre || !correo || !contrasena || !id_rol) {
@@ -479,10 +476,9 @@ router.delete('/usuarios/:id', async (req, res) => {
   }
 });
 
-
-// ===========================
-// Olvidé mi contraseña
-// ===========================
+// ===================================
+// Logica para: Olvidé mi contraseña
+// ===================================
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
 
@@ -536,9 +532,9 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-// ===========================
-// Restablecer contraseña
-// ===========================
+// ====================================
+// Logica para: Restablecer contraseña
+// ====================================
 router.post('/reset-password', async (req, res) => {
   const { token, newPassword } = req.body;
 

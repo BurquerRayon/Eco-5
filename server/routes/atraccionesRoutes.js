@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { pool, poolConnect } = require('../db/connection');
 
-// ✅ Obtener todas las atracciones
+// =============================================================
+// ✅ Obtener todas las atracciones para el administrador
+// =============================================================
 router.get('/', async (req, res) => {
   try {
     await poolConnect;
@@ -13,8 +15,9 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Error al obtener atracciones' });
   }
 });
-
-// ✅ Crear una nueva atracción
+// =============================================================
+// ✅ Crear una nueva atracción por parte del administrador
+// =============================================================
 router.post('/', async (req, res) => {
   const { nombre, descripcion, duracion, max_personas, precio } = req.body;
 
@@ -40,7 +43,9 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ✅ Actualizar una atracción existente
+// ====================================================================
+// ✅ Actualizar una atracción existente por parte del administrador
+// ====================================================================
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { nombre, descripcion, duracion, max_personas, precio } = req.body;
@@ -73,7 +78,9 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// ✅ Eliminar una atracción
+// =============================================================
+// ✅ Eliminar una atracción por parte del administrador
+// =============================================================
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 

@@ -509,20 +509,20 @@ router.get("/admin", async (req, res) => {
     const result = await pool.request().query(`
       SELECT 
         R.id_reserva,
-        P.nombre + ' ' + P.apellido AS nombre_cliente,
+        ISNULL(P.nombre, '') + ' ' + ISNULL(P.apellido, '') AS nombre_cliente,
         D.fecha,
         D.hora,
         A.nombre AS nombre_atraccion,
         D.cantidad,
         D.subtotal,
         R.estado
-      FROM Reservas R
-      JOIN Reserva_Detalles D ON R.id_reserva = D.id_reserva
-      JOIN Atraccion A ON D.id_atraccion = A.id_atraccion
-      JOIN Turista T ON R.id_turista = T.id_turista
-      JOIN Usuario U ON T.id_usuario = U.id_usuario
-      JOIN Persona P ON U.id_persona = P.id_persona
-      ORDER BY D.fecha DESC, D.hora ASC
+        FROM Reservas R
+        JOIN Reserva_Detalles D ON R.id_reserva = D.id_reserva
+        JOIN Atraccion A ON D.id_atraccion = A.id_atraccion
+        JOIN Turista T ON R.id_turista = T.id_turista
+        JOIN Usuario U ON T.id_usuario = U.id_usuario
+        JOIN Persona P ON U.id_persona = P.id_persona
+        ORDER BY D.fecha DESC, D.hora ASC
     `);
 
     res.json(result.recordset);

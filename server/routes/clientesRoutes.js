@@ -27,7 +27,9 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB
 });
 
-// Obtener datos personales
+// ============================================================================
+// Logica para Obtener datos personales por parte del cliente para el cliente
+// ============================================================================
 router.get('/datos/:id_usuario', async (req, res) => {
   const { id_usuario } = req.params;
   try {
@@ -52,7 +54,9 @@ router.get('/datos/:id_usuario', async (req, res) => {
   }
 });
 
-// Actualizar datos personales
+// ============================================================================
+// Logica para Actualizar datos personales del cliente por parte del cliente
+// ============================================================================
 router.put('/datos/:id_usuario', async (req, res) => {
   const { id_usuario } = req.params;
   const {
@@ -102,7 +106,9 @@ router.put('/datos/:id_usuario', async (req, res) => {
   }
 });
 
-// En tu archivo de rutas (clientesRoutes.js), modifica temporalmente para debuggear:
+// =======================================================================
+// Api y Ruta para obtener las nacinalidades disponibles para el cliente
+// =======================================================================
 router.get('/nacionalidades', async (req, res) => {
   try {
     await poolConnect;
@@ -111,7 +117,6 @@ router.get('/nacionalidades', async (req, res) => {
       FROM Nacionalidad 
       ORDER BY nombre
     `);
-    console.log('Nacionalidades desde DB:', result.recordset); // Debug
     res.json(result.recordset);
   } catch (err) {
     console.error('Error al obtener nacionalidades:', err);
@@ -121,6 +126,7 @@ router.get('/nacionalidades', async (req, res) => {
     });
   }
 });
+
 
 // Crear nuevo cliente
 router.post('/', async (req, res) => {

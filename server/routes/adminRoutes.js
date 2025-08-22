@@ -16,7 +16,7 @@ const mapearRol = (idRol) => {
 };
 
 // ============================
-// Ruta para obtener estadísticas
+// Ruta para obtener estadísticas para la el diagrama de la pagina de inicio del admin
 // ============================
 router.get('/stats', obtenerEstadisticas);
 
@@ -199,7 +199,7 @@ router.delete('/empleados/:id', async (req, res) => {
 });
 
 // ============================
-// Obtener todos los usuarios
+// Obtener todos los usuarios (clientes y empleados) por parte del administrador
 // ============================
 router.get('/usuarios', async (req, res) => {
   try {
