@@ -93,9 +93,9 @@ const ModalCrearFicha = ({ onClose, onFichaCreada }) => {
             <option value="" disabled hidden>
               Selecciona un hábitat
             </option>
-            <option value="6">Área Exterior</option>
-            <option value="5">Área Acuática</option>
-            <option value="7">Cueva</option>
+            <option value="1">Área Exterior</option>
+            <option value="2">Área Acuática</option>
+            <option value="3">Cueva</option>
           </select>
 
           <input type="file" accept="image/*" onChange={handleImagenChange} />
