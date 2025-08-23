@@ -32,14 +32,18 @@ const HomeEmployee = () => {
 
   const cargarMetricas = async () => {
     try {
-      // Simular carga de métricas - puedes reemplazar con APIs reales
       const statsResponse = await axios.get('http://ecomaravilla2.duckdns.org:3001/api/admin/stats');
       
+      // Obtener reservas de hoy
+      const today = new Date().toISOString().split('T')[0];
+      const reservasHoyResponse = await axios.get(`http://ecomaravilla2.duckdns.org:3001/api/reservas/fecha/${today}`)
+        .catch(() => ({ data: [] })); // Si no existe la ruta, usar array vacío
+      
       setMetricas({
-        reservasHoy: 23, // Simulado por ahora
-        especiesGaleria: 45, // Simulado por ahora
-        reportesPendientes: 8, // Simulado por ahora
-        atraccionesActivas: statsResponse.data.atracciones || 6
+        reservasHoy: reservasHoyResponse.data?.length || 0,
+        especiesGaleria: statsResponse.data.especies || 0,
+        reportesPendientes: 8, // Simulado por ahora - se puede agregar después
+        atraccionesActivas: statsResponse.data.atracciones || 0
       });
     } catch (error) {
       console.error('Error al cargar métricas:', error);

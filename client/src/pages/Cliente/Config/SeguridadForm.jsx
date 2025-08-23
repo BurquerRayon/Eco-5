@@ -78,25 +78,6 @@ const SeguridadForm = () => {
     setTimeout(() => setMensaje({ text: '', type: '' }), 3000);
   };
 
-  const handleConfigSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      setCargando(true);
-      await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/cliente/configuracion-seguridad/${user.id_usuario}`, configuracion);
-      setMensaje({ text: '✅ Configuración de seguridad actualizada', type: 'success' });
-    } catch (error) {
-      setMensaje({
-        text: error.response?.data?.message || '❌ Error al actualizar configuración',
-        type: 'error'
-      });
-    } finally {
-      setCargando(false);
-    }
-
-    setTimeout(() => setMensaje({ text: '', type: '' }), 3000);
-  };
-
   return (
     <div className="security-form-container">
       <h3 className="security-form-title">Seguridad de la Cuenta</h3>

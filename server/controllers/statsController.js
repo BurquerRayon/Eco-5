@@ -8,6 +8,9 @@ const obtenerEstadisticas = async (req, res) => {
     const reservas = await pool.request().query('SELECT COUNT(*) AS total FROM Reservas');
     const atracciones = await pool.request().query('SELECT COUNT(*) AS total FROM Atraccion');
 
+    // Contar especies en la galería (usar tabla Especimen)
+    const especies = await pool.request().query('SELECT COUNT(*) AS total FROM Especimen');
+
     const ingresosTotales = await pool.request().query(`
       SELECT SUM(r.total_pago_estimado) AS ingresos_totales
       FROM reservas r
@@ -62,6 +65,22 @@ const obtenerEstadisticas = async (req, res) => {
       ORDER BY total_reservas DESC
     `);
 
+    // ➤ Reservas de hoy para empleados
+    const reservasHoy = await pool.request().query(`
+      SELECT COUNT(*) AS total
+      FROM reservas r
+      JOIN Reserva_Detalles rd ON r.id_reserva = rd.id_reserva
+      WHERE CAST(rd.fecha AS DATE) = CAST(GETDATE() AS DATE)
+      AND r.estado != 'cancelada'
+    `);
+
+    // ➤ Reportes pendientes (simulado - ajustar según tu estructura de reportes)
+    const reportesPendientes = await pool.request().query(`
+      SELECT COUNT(*) AS total
+      FROM reservas
+      WHERE estado = 'pendiente'
+    `);
+
     res.json({
       usuarios: usuarios.recordset[0].total,
       reservas: reservas.recordset[0].total,
@@ -69,7 +88,9 @@ const obtenerEstadisticas = async (req, res) => {
       ingresos: ingresosTotales.recordset[0].ingresos_totales || 0,
       ingresosPorMesTotales: ingresosPorMesTotales.recordset,
       ingresosPorMes: ingresosPorMes.recordset,
-
+      especies: especies.recordset[0].total,
+      reservasHoy: reservasHoy.recordset[0].total,
+      reportesPendientes: reportesPendientes.recordset[0].total,
       reservasPorAtraccion: reservasPorAtraccion.recordset
 
     });
