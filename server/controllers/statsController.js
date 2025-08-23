@@ -14,8 +14,7 @@ const obtenerEstadisticas = async (req, res) => {
     const ingresosTotales = await pool.request().query(`
       SELECT SUM(r.total_pago_estimado) AS ingresos_totales
       FROM reservas r
-      JOIN Reserva_Detalles rd ON r.id_reserva = rd.id_reserva
-      WHERE r.estado != 'cancelada'
+      WHERE r.pagado = 1 and r.estado = 'confirmado'
     `);
 
     // ➤ Ingresos por mes y atracción (para ReportesAdmin)
@@ -30,7 +29,7 @@ const obtenerEstadisticas = async (req, res) => {
       FROM reservas r
       JOIN Reserva_Detalles rd ON r.id_reserva = rd.id_reserva
       JOIN Atraccion a ON rd.id_atraccion = a.id_atraccion
-      WHERE r.estado != 'cancelada'
+      WHERE r.pagado = 1 and r.estado = 'confirmado'
       GROUP BY DATENAME(MONTH, rd.fecha), MONTH(rd.fecha), YEAR(rd.fecha), a.nombre
       ORDER BY YEAR(rd.fecha), MONTH(rd.fecha)
     `);
@@ -39,17 +38,15 @@ const obtenerEstadisticas = async (req, res) => {
     const ingresosPorMesTotales = await pool.request().query(`
       SET LANGUAGE Spanish;
       SELECT 
-        DATENAME(MONTH, rd.fecha) + ' ' + CAST(YEAR(rd.fecha) AS VARCHAR) AS mes,
-        MONTH(rd.fecha) AS mes_numero,
-        YEAR(rd.fecha) AS anio,
+        DATENAME(MONTH, r.fecha_creacion) + ' ' + CAST(YEAR(r.fecha_creacion) AS VARCHAR) AS mes,
+        MONTH(r.fecha_creacion) AS mes_numero,
+        YEAR(r.fecha_creacion) AS anio,
         SUM(r.total_pago_estimado) AS ingresos_mes
       FROM reservas r
-      JOIN Reserva_Detalles rd ON r.id_reserva = rd.id_reserva
-      WHERE r.estado != 'cancelada'
-      GROUP BY DATENAME(MONTH, rd.fecha), MONTH(rd.fecha), YEAR(rd.fecha)
-      ORDER BY YEAR(rd.fecha), MONTH(rd.fecha)
+      WHERE r.pagado = 1 and r.estado = 'confirmado'
+      GROUP BY DATENAME(MONTH, r.fecha_creacion), MONTH(r.fecha_creacion), YEAR(r.fecha_creacion)
+      ORDER BY YEAR(r.fecha_creacion), MONTH(r.fecha_creacion)
     `);
-
 
     // ➤ Reservas por atracción (para ReportesAdmin)
     const reservasPorAtraccion = await pool.request().query(`

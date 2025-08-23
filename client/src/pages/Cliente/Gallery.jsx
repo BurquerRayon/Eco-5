@@ -26,7 +26,6 @@ const Galeria = () => {
       navigate("/");
     }
   };
-  const [tarjetaExpandida, setTarjetaExpandida] = useState(null);
   const [imagenesMezcladas, setImagenesMezcladas] = useState([]);
   const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
   const [fichaParaEditar, setFichaParaEditar] = useState(null);
@@ -100,20 +99,33 @@ const Galeria = () => {
   });
 
   return (
-    <div className="page-wrapper">
-      <main className="content">
-        <div className="galeria-container">
-          <button className="btn-salir" onClick={handleVolver}>
-            ← Volver al Inicio
-          </button>
+  <div className="page-wrapper">
+    <main className="content">
+      <div className="galeria-container">
+        <button className="btn-salir" onClick={handleVolver}>
+          ← Volver al Inicio
+        </button>
 
-          <h1>Galería de Especies</h1>
-          <p>
-            Explora nuestras imágenes rotativas o filtra por especie/hábitat:
-          </p>
-          
-          {/* Nuevo buscador por texto */}
-          <div className="search-container">
+        <h1>Galería de Especies</h1>
+        <p>
+          Explora nuestras imágenes rotativas o filtra por especie/hábitat:
+        </p>
+        
+        {/* Botón crear ficha para empleados */}
+        {esEmpleado && (
+          <button
+            className="btn-crear-ficha"
+            onClick={() => {
+              console.log("Botón crear ficha clickeado");
+              setMostrarModalCrear(true);
+            }}
+          >
+            Crear nueva ficha
+          </button>
+        )}
+
+        {/* Nuevo buscador por texto */}
+        <div className="search-container">
           <input
             type="text"
             placeholder="Buscar por nombre o nombre científico..."
@@ -121,19 +133,7 @@ const Galeria = () => {
             onChange={(e) => setBusquedaTexto(e.target.value)}
             className="search-input"
           />
-          </div>
-
-          {esEmpleado && (
-            <button
-              className="btn-crear-ficha"
-              onClick={() => {
-                console.log("Botón crear ficha clickeado");
-                setMostrarModalCrear(true);
-              }}
-            >
-              Crear nueva ficha
-            </button>
-          )}
+        </div>
 
           <div className="filters-section">
             <div className="filter-group">

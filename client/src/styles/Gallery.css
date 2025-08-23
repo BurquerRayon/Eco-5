@@ -302,20 +302,26 @@
 }
 
 .btn-crear-ficha {
-  background-color: var(--success);
+  background-color: #228b22;
   color: white;
-  padding: 10px 16px;
-  margin: 10px auto;
+  padding: 8px 16px;
   border: none;
   border-radius: 8px;
-  font-weight: bold;
+  font-size: 0.9rem;
   cursor: pointer;
-  display: block;
+  margin-bottom: 1rem;
   transition: background-color 0.2s ease-in-out;
+  width: auto;
+  justify-self: start;
+  min-width: fit-content;
+  white-space: nowrap;
+  display: block; /* Aseguramos que sea un bloque para posicionamiento */
+  margin: 0 auto 20px auto; /* Centramos y añadimos margen inferior */
+  max-width: 200px; /* Limitamos el ancho máximo */
 }
 
 .btn-crear-ficha:hover {
-  background-color: #45a049;
+  background-color: #1a6e1a;
 }
 
 /* Responsive */

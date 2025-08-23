@@ -97,13 +97,7 @@ const HomeEmployee = () => {
       descripcion: "Ver reportes y estadísticas",
       color: "#9b59b6"
     },
-    { 
-      nombre: "Editar Carrusel", 
-      ruta: "/Carousel",
-      icono: <FaEdit />,
-      descripcion: "Gestionar contenido del carrusel",
-      color: "#34495e"
-    }
+    
   ];
 
   const MetricCard = ({ title, value, icon, color, loading }) => (

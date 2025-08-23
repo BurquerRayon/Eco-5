@@ -108,22 +108,31 @@ const Mapa = () => {
     <div style={{ height: "80vh", width: "100%" }}>
       <div
         style={{
-          padding: "10px",
-          backgroundColor: "#f5f5f5",
-          borderBottom: "1px solid #ddd",
+          padding: "15px",
+          backgroundColor: "#f8f9fa",
+          borderBottom: "1px solid #e9ecef",
+          display: "flex",
+          justifyContent: "flex-start",
         }}
       >
         <button
           onClick={handleGoBack}
           style={{
-            padding: "8px 16px",
-            backgroundColor: "#007bff",
+            padding: "10px 20px",
+            backgroundColor: "#228b22",
             color: "white",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "8px",
             cursor: "pointer",
-            fontSize: "14px",
+            fontSize: "16px",
+            fontWeight: "600",
+            transition: "background-color 0.2s ease",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            width: "auto",
+            minWidth: "120px",
           }}
+          onMouseOver={(e) => e.target.style.backgroundColor = "#1a6e1a"}
+          onMouseOut={(e) => e.target.style.backgroundColor = "#228b22"}
         >
           ← Volver
         </button>
@@ -132,6 +141,7 @@ const Mapa = () => {
         ref={mapRef}
         style={{ height: "calc(100% - 50px)", width: "100%" }}
       ></div>
+      <Footer />
     </div>
   );
 };  
