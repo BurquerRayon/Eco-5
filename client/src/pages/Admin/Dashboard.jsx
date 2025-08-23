@@ -2,16 +2,12 @@ import React, { useEffect, useState } from 'react';
 import {
   FaUser,
   FaClipboardList,
-  FaChartBar,
-  FaUserTie,
-  FaCog,
   FaDollarSign,
   FaUmbrellaBeach
 } from 'react-icons/fa';
 import DashboardLayout from '../../components/DashboardLayout';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import '../../styles/Dashboard.css';
 
