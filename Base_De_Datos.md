@@ -1,13 +1,12 @@
-  -- ESTRUCTURA BASE DE DATOS - EcoMaravillas
-
--- 2. Tabla Nacionalidad
+-- ESTRUCTURA BASE DE DATOS - EcoMaravillas
+-- 1. Tabla Nacionalidad
 CREATE TABLE Nacionalidad (
     id_nacionalidad INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(100),
     codigo_iso VARCHAR(3)
 );
 
--- 3. Tabla Persona
+-- 2. Tabla Persona
 CREATE TABLE Persona (
     id_persona INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(100),
@@ -21,32 +20,21 @@ CREATE TABLE Persona (
     FOREIGN KEY (id_nacionalidad) REFERENCES Nacionalidad(id_nacionalidad)
 );
 
-
--- 4. Tabla Rol
+-- 3. Tabla Rol
 CREATE TABLE Rol (
     id_rol INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(100),
     descripcion TEXT
 );
 
--- 5. Tabla Permiso
+-- 4. Tabla Permiso
 CREATE TABLE Permiso (
     id_permiso INT IDENTITY(1,1) PRIMARY KEY,
     nombre_permiso NVARCHAR(100),
     descripcion TEXT
 );
 
--- 6. Vista Rol_Permiso
-CREATE VIEW Rol_Permiso AS
-SELECT
-    r.id_rol,
-    r.nombre AS nombre_rol,
-    p.id_permiso,
-    p.nombre_permiso
-FROM Rol r
-CROSS JOIN Permiso p;
-
--- 7. Tabla Usuario
+-- 6. Tabla Usuario
 CREATE TABLE Usuario (
     id_usuario INT IDENTITY(1,1) PRIMARY KEY,
     id_rol INT,
@@ -59,7 +47,7 @@ CREATE TABLE Usuario (
     FOREIGN KEY (id_persona) REFERENCES Persona(id_persona)
 );
 
--- 8. Tabla Notificacion
+-- 7. Tabla Notificacion
 CREATE TABLE Notificacion (
     id_notificacion INT IDENTITY(1,1) PRIMARY KEY,
     id_usuario INT,
@@ -68,7 +56,7 @@ CREATE TABLE Notificacion (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
--- 9. Tabla Turista
+-- 8. Tabla Turista
 CREATE TABLE Turista (
     id_turista INT IDENTITY(1,1) PRIMARY KEY,
     id_usuario INT,
@@ -76,7 +64,7 @@ CREATE TABLE Turista (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
--- 10. Tabla Tipo_Documentos
+-- 9. Tabla Tipo_Documentos
 CREATE TABLE Tipo_Documentos (
     id_tipo_documento INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(100),
@@ -85,7 +73,7 @@ CREATE TABLE Tipo_Documentos (
     foto_reverso_documento NVARCHAR(255)
 );
 
--- 11. Tabla Turista_Documentos
+-- 10. Tabla Turista_Documentos
 CREATE TABLE Turista_Documentos (
     id_turistas_documentos INT IDENTITY(1,1) PRIMARY KEY,
     id_usuario INT,
@@ -98,7 +86,7 @@ CREATE TABLE Turista_Documentos (
     FOREIGN KEY (id_tipo_documento) REFERENCES Tipo_Documentos(id_tipo_documento) ON DELETE CASCADE
 );
 
--- 12. Tabla Reservas
+-- 11. Tabla Reservas
 CREATE TABLE Reservas (
     id_reserva INT IDENTITY(1,1) PRIMARY KEY,
     id_turista INT NOT NULL,
@@ -106,10 +94,11 @@ CREATE TABLE Reservas (
     total_pago_estimado DECIMAL(10,2),
     pagado BIT DEFAULT 0,
     ediciones INT DEFAULT 0,
+	fecha_creacion DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (id_turista) REFERENCES Turista(id_turista) ON DELETE CASCADE
 );
 
--- 13. Tabla Atraccion
+-- 12. Tabla Atraccion
 CREATE TABLE Atraccion (
     id_atraccion INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(100),
@@ -119,7 +108,7 @@ CREATE TABLE Atraccion (
     precio DECIMAL(10,2)
 );
 
--- 14. Tabla Reserva_Detalles
+-- 13. Tabla Reserva_Detalles
 CREATE TABLE Reserva_Detalles (
     id_detalle_reserva INT IDENTITY(1,1) PRIMARY KEY,
     id_reserva INT,
@@ -133,13 +122,13 @@ CREATE TABLE Reserva_Detalles (
     FOREIGN KEY (id_atraccion) REFERENCES Atraccion(id_atraccion)
 );
 
--- 15. Tabla Metodo_Pago
+-- 14. Tabla Metodo_Pago
 CREATE TABLE Metodo_Pago (
     id_metodo_pago INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(50)
 );
 
--- 16. Tabla Moneda
+-- 15. Tabla Moneda
 CREATE TABLE Moneda (
     id_moneda INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(50),
@@ -149,14 +138,14 @@ CREATE TABLE Moneda (
     fecha_actualizacion DATETIME
 );
 
--- 17. Tabla Banco
+-- 16. Tabla Banco
 CREATE TABLE Banco (
     id_banco INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(100),
     codigo_banco NVARCHAR(100)
 );
 
--- 18. Tabla Cuenta_Banco
+-- 17. Tabla Cuenta_Banco
 CREATE TABLE Cuenta_Banco (
     id_cuenta_banco INT IDENTITY(1,1) PRIMARY KEY,
     id_turista INT NOT NULL,
@@ -171,7 +160,7 @@ CREATE TABLE Cuenta_Banco (
     FOREIGN KEY (id_turista) REFERENCES Turista(id_turista) ON DELETE CASCADE
 );
 
--- 19. Tabla Habitat
+-- 18. Tabla Habitat
 CREATE TABLE Habitat (
     id_habitat INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(100),
@@ -179,7 +168,7 @@ CREATE TABLE Habitat (
     ubicacion NVARCHAR(200)
 );
 
--- 20. Tabla Especimen
+-- 19. Tabla Especimen
 CREATE TABLE Especimen (
     id_especimen INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(100),
@@ -191,7 +180,7 @@ CREATE TABLE Especimen (
     FOREIGN KEY (id_habitat) REFERENCES Habitat(id_habitat)
 );
 
--- 21. Tabla Especimen_Imagen
+-- 20. Tabla Especimen_Imagen
 CREATE TABLE Especimen_Imagen (
     id_imagen INT IDENTITY(1,1) PRIMARY KEY,
     id_especimen INT,
@@ -201,7 +190,19 @@ CREATE TABLE Especimen_Imagen (
     FOREIGN KEY (id_especimen) REFERENCES Especimen(id_especimen) ON DELETE CASCADE
 );
 
--- 22. Tabla Reporte_Detalle
+-- 24. Tabla Personal
+CREATE TABLE Personal (
+    id_personal INT IDENTITY(1,1) PRIMARY KEY,
+    id_usuario INT,
+    especialidad NVARCHAR(100),
+    fecha_contratacion DATE,
+    numero_licencia NVARCHAR(50),
+    turno NVARCHAR(50),
+    estado BIT DEFAULT 1,
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
+);
+
+-- 21. Tabla Reporte_Detalle
 CREATE TABLE Reporte_Detalle (
     id_reporte_detalle INT IDENTITY(1,1) PRIMARY KEY,
     titulo NVARCHAR(100),
@@ -216,14 +217,14 @@ CREATE TABLE Reporte_Detalle (
     FOREIGN KEY (id_personal) REFERENCES Personal(id_personal)
 );
 
--- 23. Tabla Tipo_Reporte
+-- 22. Tabla Tipo_Reporte
 CREATE TABLE Tipo_Reporte (
     id_tipo_reporte INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(100),
     descripcion TEXT
 );
 
--- 24. Tabla Reporte
+-- 23. Tabla Reporte
 CREATE TABLE Reporte (
     id_reporte INT IDENTITY(1,1) PRIMARY KEY,
     id_reporte_detalle INT,
@@ -232,19 +233,7 @@ CREATE TABLE Reporte (
     FOREIGN KEY (id_tipo_reporte) REFERENCES Tipo_Reporte(id_tipo_reporte)
 );
 
--- 25. Tabla Personal
-CREATE TABLE Personal (
-    id_personal INT IDENTITY(1,1) PRIMARY KEY,
-    id_usuario INT,
-    especialidad NVARCHAR(100),
-    fecha_contratacion DATE,
-    numero_licencia NVARCHAR(50),
-    turno NVARCHAR(50),
-    estado BIT DEFAULT 1,
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
-);
-
--- 26. Tabla Pagos
+-- 25. Tabla Pagos
 CREATE TABLE Pagos (
     id_pagos INT IDENTITY(1,1) PRIMARY KEY,
     id_reserva INT,
@@ -263,7 +252,7 @@ CREATE TABLE Pagos (
     FOREIGN KEY (id_moneda) REFERENCES Moneda(id_moneda)
 );
 
--- 27. Tabla Verificacion
+-- 26. Tabla Verificacion
 CREATE TABLE Verificacion (
     id_verificacion INT IDENTITY(1,1) PRIMARY KEY,
     id_usuario INT NOT NULL,
@@ -273,7 +262,7 @@ CREATE TABLE Verificacion (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
--- 28. Tabla RecuperacionPassword
+-- 27. Tabla RecuperacionPassword
 CREATE TABLE RecuperacionPassword (
     id INT IDENTITY(1,1) PRIMARY KEY,
     id_usuario INT,
@@ -282,7 +271,7 @@ CREATE TABLE RecuperacionPassword (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
--- 29. Vista ReservasConfirmadas 
+-- 28. Vista ReservasConfirmadas 
 CREATE VIEW ReservasConfirmadas AS
 SELECT r.id_reserva, p.nombre, r.total_pago_estimado
 FROM Reservas r
@@ -291,7 +280,7 @@ JOIN Usuario u ON t.id_usuario = u.id_usuario
 JOIN Persona p ON u.id_persona = p.id_persona
 WHERE r.estado = 'confirmada';
 
--- 30. Vista ReporteCompleto 
+-- 29. Vista ReporteCompleto 
 CREATE VIEW ReporteCompleto AS
 SELECT 
     r.id_reporte,
@@ -308,6 +297,15 @@ JOIN Tipo_Reporte t ON r.id_tipo_reporte = t.id_tipo_reporte
 JOIN Reporte_Detalle d ON r.id_reporte_detalle = d.id_reporte_detalle
 LEFT JOIN Personal p ON d.id_personal = p.id_personal;
 
+-- 5. Vista Rol_Permiso
+CREATE VIEW Rol_Permiso AS
+SELECT
+    r.id_rol,
+    r.nombre AS nombre_rol,
+    p.id_permiso,
+    p.nombre_permiso
+FROM Rol r
+CROSS JOIN Permiso p;
 -----------------------------------------------------------------------------
 
 -- Valores basicos dentro de la tabla dentro de las tablas
@@ -350,3 +348,8 @@ INSERT INTO Banco (nombre, codigo_banco) VALUES
 ('Banco Popular', 'BP01'),
 ('Banreservas', 'BR02'),
 ('Scotiabank', 'SC03');
+
+INSERT INTO Rol (nombre, descripcion) VALUES 
+('admin', 'Admin del sistema'),
+('empleado', 'Personal autorizado'),
+('cliente', 'Usuario general');
