@@ -3,9 +3,6 @@ import '../../styles/ConfigAdmin.css';
 import RolesConfig from './Config/Roles';
 import PermisosConfig from './Config/Permisos';
 import AtraccionesConfig from './Config/Atracciones';
-import MonedasConfig from './Config/Monedas';
-import ReportesConfig from './Config/TiposDeReportes';
-import NacionalidadesConfig from './Config/Nacionalidades';
 import HorarioReservasConfig from './Config/HorarioReservasConfig';
 import { Link } from 'react-router-dom';
 
@@ -46,24 +43,7 @@ const Config = () => {
         >
           Atracciones
         </button>
-        <button 
-          className={`ajuste-card ${formularioActivo === 'monedas' ? 'active' : ''}`}
-          onClick={() => manejarSeleccion('monedas')}
-        >
-          Monedas
-        </button>
-        <button 
-          className={`ajuste-card ${formularioActivo === 'reportes' ? 'active' : ''}`}
-          onClick={() => manejarSeleccion('reportes')}
-        >
-          Tipos de Reporte
-        </button>
-        <button 
-          className={`ajuste-card ${formularioActivo === 'nacionalidades' ? 'active' : ''}`}
-          onClick={() => manejarSeleccion('nacionalidades')}
-        >
-          Nacionalidades
-        </button>
+        
         <button 
           className={`ajuste-card ${formularioActivo === 'horarios' ? 'active' : ''}`}
           onClick={() => manejarSeleccion('horarios')}
@@ -85,9 +65,6 @@ const Config = () => {
             {formularioActivo === 'roles' && <RolesConfig />}
             {formularioActivo === 'permisos' && <PermisosConfig />}
             {formularioActivo === 'atracciones' && <AtraccionesConfig />}
-            {formularioActivo === 'monedas' && <MonedasConfig />}
-            {formularioActivo === 'reportes' && <ReportesConfig />}
-            {formularioActivo === 'nacionalidades' && <NacionalidadesConfig />}
             {formularioActivo === 'horarios' && <HorarioReservasConfig />}
           </>
         )}

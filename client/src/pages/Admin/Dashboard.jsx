@@ -176,7 +176,6 @@ const Dashboard = () => {
     <DashboardLayout user={user}>
       <div className="dashboard-wrapper">
         <main className="dashboard-content">
-          <h2 className="dashboard-title">Panel de Control del Administrador</h2>
           <p style={{ textAlign: 'center', color: '#6b7280', marginBottom: '2rem' }}>
             Bienvenido de nuevo, {user?.nombre}. Gestiona el sistema desde aquí.
           </p>
@@ -220,99 +219,6 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
-
-          {/* ACCESOS RÁPIDOS */}
-          <div style={{ 
-            background: 'white', 
-            borderRadius: '16px', 
-            padding: '2rem', 
-            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.08)',
-            marginBottom: '2rem'
-          }}>
-            <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#1f2937' }}>
-              Accesos Rápidos
-            </h3>
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-              gap: '1rem' 
-            }}>
-              <Link to="/admin/config" className="dashboard-btn" style={{ 
-                textAlign: 'center', 
-                padding: '1rem',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-              }}>
-                <FaCog style={{ marginBottom: '0.5rem', fontSize: '1.5rem' }} />
-                Configuración
-              </Link>
-              <Link to="/admin/Reservas" className="dashboard-btn" style={{ 
-                textAlign: 'center', 
-                padding: '1rem',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-              }}>
-                <FaClipboardList style={{ marginBottom: '0.5rem', fontSize: '1.5rem' }} />
-                Reservas
-              </Link>
-              <Link to="/admin/usuarios" className="dashboard-btn" style={{ 
-                textAlign: 'center', 
-                padding: '1rem',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-              }}>
-                <FaUser style={{ marginBottom: '0.5rem', fontSize: '1.5rem' }} />
-                Usuarios
-              </Link>
-              <Link to="/admin/reportes" className="dashboard-btn" style={{ 
-                textAlign: 'center', 
-                padding: '1rem',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-              }}>
-                <FaChartBar style={{ marginBottom: '0.5rem', fontSize: '1.5rem' }} />
-                Reportes
-              </Link>
-            </div>
-          </div>
-
-          {/* DETALLE DE INGRESOS POR MES */}
-          {sortedData.length > 0 && (
-            <div style={{ 
-              background: 'white', 
-              borderRadius: '16px', 
-              padding: '1.5rem', 
-              boxShadow: '0 8px 20px rgba(0, 0, 0, 0.08)' 
-            }}>
-              <h3 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#1f2937' }}>
-                Detalle de Ingresos por Mes
-              </h3>
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
-                gap: '1rem' 
-              }}>
-                {sortedData.map((mes, index) => (
-                  <div key={index} style={{
-                    background: '#f9fafb',
-                    padding: '1rem',
-                    borderRadius: '8px',
-                    borderLeft: '3px solid #3B82F6',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}>
-                    <span style={{ fontWeight: '500', color: '#374151' }}>{mes.mes}:</span>
-                    <span style={{ fontWeight: '600', color: '#1f2937' }}>${parseFloat(mes.ingresos_mes).toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </main>
       </div>
     </DashboardLayout>

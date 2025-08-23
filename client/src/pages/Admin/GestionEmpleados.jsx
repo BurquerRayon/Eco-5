@@ -155,6 +155,20 @@ const GestionEmpleados = () => {
     }
   };
 
+  const calcularEdad = (fechaNacimiento) => {
+    if (!fechaNacimiento) return null;
+    const hoy = new Date();
+    const fechaNac = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+    const mesActual = hoy.getMonth();
+    const mesNacimiento = fechaNac.getMonth();
+    
+    if (mesActual < mesNacimiento || (mesActual === mesNacimiento && hoy.getDate() < fechaNac.getDate())) {
+      edad--;
+    }
+    return edad;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -162,6 +176,11 @@ const GestionEmpleados = () => {
 
     try {
       const datosEnvio = { ...formData };
+      
+      // Calcular edad si hay fecha de nacimiento
+      if (datosEnvio.fecha_nacimiento) {
+        datosEnvio.edad = calcularEdad(datosEnvio.fecha_nacimiento);
+      }
       
       // No enviar contraseña vacía en edición
       if (editando && !datosEnvio.contrasena) {
@@ -172,7 +191,7 @@ const GestionEmpleados = () => {
         await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/empleados/${empleadoActual.id_usuario}`, datosEnvio);
         mostrarMensaje('Empleado actualizado correctamente', 'success');
       } else {
-        await axios.post('http://ecomaravilla2.duckdns.org:3001/api/empleados', datosEnvio);
+        await axios.post('http://ecomaravilla2.duckdns.org:3001/api/empleados/crear', datosEnvio);
         mostrarMensaje('Empleado creado correctamente', 'success');
       }
 
@@ -184,6 +203,24 @@ const GestionEmpleados = () => {
         error.response?.data?.message || 'Error al guardar el empleado', 
         'error'
       );
+    }
+  };
+
+  const cambiarEstadoCuenta = async (id_usuario, estadoActual) => {
+    const nuevoEstado = estadoActual === 'activo' ? 'bloqueado' : 'activo';
+    const accion = nuevoEstado === 'activo' ? 'habilitar' : 'deshabilitar';
+    
+    if (!window.confirm(`¿Estás seguro de ${accion} la cuenta de este empleado?`)) return;
+
+    try {
+      await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/empleados/estado/${id_usuario}`, {
+        estado: nuevoEstado
+      });
+      mostrarMensaje(`Cuenta ${nuevoEstado === 'activo' ? 'habilitada' : 'deshabilitada'} correctamente`, 'success');
+      cargarDatos();
+    } catch (error) {
+      console.error('Error:', error);
+      mostrarMensaje('Error al cambiar estado de la cuenta', 'error');
     }
   };
 
@@ -246,50 +283,61 @@ const GestionEmpleados = () => {
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Apellido</th>
+              <th>Cédula</th>
               <th>Correo</th>
+              <th>Edad</th>
               <th>Turno</th>
-              <th>Fecha Contratación</th>
-              <th>Estado</th>
+              <th>Estado Laboral</th>
+              <th>Estado Cuenta</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {empleadosFiltrados.map(empleado => (
-              <tr key={empleado.id_usuario}>
-                <td>{empleado.nombre || '-'}</td>
-                <td>{empleado.apellido || '-'}</td>
-                <td>{empleado.correo}</td>
-                <td>{empleado.turno || '-'}</td>
-                <td>
-                  {empleado.fecha_contratacion 
-                    ? new Date(empleado.fecha_contratacion).toLocaleDateString() 
-                    : '-'
-                  }
-                </td>
-                <td>
-                  <span className={`estado ${empleado.activo ? 'activo' : 'inactivo'}`}>
-                    {empleado.activo ? 'Activo' : 'Inactivo'}
-                  </span>
-                </td>
-                <td className="acciones-celda">
-                  <button 
-                    onClick={() => abrirModal(empleado)}
-                    className="btn-editar"
-                    title="Editar"
-                  >
-                    ✏️
-                  </button>
-                  <button 
-                    onClick={() => eliminarEmpleado(empleado.id_usuario)}
-                    className="btn-eliminar"
-                    title="Eliminar"
-                  >
-                    🗑️
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {empleadosFiltrados.map(empleado => {
+              const edad = empleado.fecha_nacimiento ? calcularEdad(empleado.fecha_nacimiento) : null;
+              return (
+                <tr key={empleado.id_usuario}>
+                  <td>{`${empleado.nombre || ''} ${empleado.apellido || ''}`.trim() || '-'}</td>
+                  <td>{empleado.cedula || '-'}</td>
+                  <td>{empleado.correo}</td>
+                  <td>{edad || '-'}</td>
+                  <td>{empleado.turno || '-'}</td>
+                  <td>
+                    <span className={`estado ${empleado.estado ? 'activo' : 'inactivo'}`}>
+                      {empleado.estado ? 'Activo' : 'Inactivo'}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`estado ${empleado.cuenta_estado === 'activo' ? 'activo' : 'inactivo'}`}>
+                      {empleado.cuenta_estado === 'activo' ? 'Habilitada' : 'Bloqueada'}
+                    </span>
+                  </td>
+                  <td className="acciones-celda">
+                    <button 
+                      onClick={() => abrirModal(empleado)}
+                      className="btn-editar"
+                      title="Editar"
+                    >
+                      ✏️
+                    </button>
+                    <button 
+                      onClick={() => cambiarEstadoCuenta(empleado.id_usuario, empleado.cuenta_estado)}
+                      className={`btn-estado ${empleado.cuenta_estado === 'activo' ? 'btn-deshabilitar' : 'btn-habilitar'}`}
+                      title={empleado.cuenta_estado === 'activo' ? 'Deshabilitar cuenta' : 'Habilitar cuenta'}
+                    >
+                      {empleado.cuenta_estado === 'activo' ? '🔒' : '🔓'}
+                    </button>
+                    <button 
+                      onClick={() => eliminarEmpleado(empleado.id_usuario)}
+                      className="btn-eliminar"
+                      title="Eliminar"
+                    >
+                      🗑️
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

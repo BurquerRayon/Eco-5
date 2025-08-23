@@ -198,8 +198,8 @@ router.post('/', async (req, res) => {
       .input('estado', 'activo')
       .input('id_rol', 3)
       .query(`
-        INSERT INTO Usuario (id_persona, correo, contrasena, estado, id_rol)
-        VALUES (@id_persona, @correo, @contrasena, @estado, @id_rol)
+        INSERT INTO Usuario (id_persona, correo, contrasena, estado, id_rol,verificado)
+        VALUES (@id_persona, @correo, @contrasena, @estado, @id_rol, 1)
       `);
 
     await transaction.commit();
@@ -222,11 +222,13 @@ router.get('/', async (req, res) => {
       SELECT 
         U.id_usuario,
         U.correo,
+        U.estado as cuenta_estado,
         P.id_persona,
         P.nombre,
         P.apellido,
         P.cedula,
         P.fecha_nacimiento,
+        P.edad,
         P.telefono,
         P.id_nacionalidad,
         P.id_sexo as sexo,
@@ -234,7 +236,7 @@ router.get('/', async (req, res) => {
       FROM Usuario U
       JOIN Persona P ON U.id_persona = P.id_persona
       LEFT JOIN Nacionalidad N ON P.id_nacionalidad = N.id_nacionalidad
-      WHERE U.id_rol = 3
+      WHERE U.id_rol = 3 AND U.verificado = 1
       ORDER BY P.nombre, P.apellido
     `);
     res.json(result.recordset);
@@ -801,5 +803,27 @@ router.delete('/cuenta-bancaria/:id_cuenta', async (req, res) => {
   }
 });
 
+
+// Cambiar estado de cuenta del cliente (habilitar/deshabilitar)
+router.put('/estado/:id_usuario', async (req, res) => {
+  const { id_usuario } = req.params;
+  const { estado } = req.body; // 'activo' o 'bloqueado'
+  
+  try {
+    await poolConnect;
+    await pool.request()
+      .input('id_usuario', id_usuario)
+      .input('estado', estado)
+      .query(`
+        UPDATE Usuario SET estado = @estado
+        WHERE id_usuario = @id_usuario
+      `);
+    
+    res.json({ message: `✅ Estado de cuenta actualizado a ${estado}` });
+  } catch (err) {
+    console.error('Error al cambiar estado de cuenta:', err);
+    res.status(500).json({ message: 'Error al cambiar estado de cuenta' });
+  }
+});
 
 module.exports = router;

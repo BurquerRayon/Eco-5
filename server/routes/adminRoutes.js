@@ -412,4 +412,41 @@ router.delete('/usuarios/:id', async (req, res) => {
   }
 });
 
+// Ruta para cambiar estado de usuario (habilitar/deshabilitar)
+router.put('/usuarios/:id_usuario/estado', async (req, res) => {
+  const { id_usuario } = req.params;
+  const { estado } = req.body;
+
+  if (!estado || !['activo', 'bloqueado'].includes(estado)) {
+    return res.status(400).json({ message: 'Estado inválido. Debe ser "activo" o "bloqueado"' });
+  }
+
+  try {
+    await poolConnect;
+    
+    // Verificar que el usuario existe
+    const usuarioExists = await pool.request()
+      .input('id_usuario', id_usuario)
+      .query('SELECT id_usuario FROM Usuario WHERE id_usuario = @id_usuario');
+
+    if (usuarioExists.recordset.length === 0) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    // Actualizar estado del usuario
+    await pool.request()
+      .input('id_usuario', id_usuario)
+      .input('estado', estado)
+      .query('UPDATE Usuario SET estado = @estado WHERE id_usuario = @id_usuario');
+
+    res.json({ 
+      message: `Usuario ${estado === 'activo' ? 'habilitado' : 'deshabilitado'} correctamente`,
+      estado: estado
+    });
+  } catch (err) {
+    console.error('Error al cambiar estado del usuario:', err);
+    res.status(500).json({ message: 'Error al cambiar estado del usuario' });
+  }
+});
+
 module.exports = router;

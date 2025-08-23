@@ -1,10 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaUser, FaClipboardList, FaChartBar, FaCog, FaUserTie } from 'react-icons/fa';
+import { FaUser, FaUsers, FaClipboardList, FaChartBar, FaCog, FaUserTie } from 'react-icons/fa';
 
 const Sidebar = ({ rol }) => {
   const links = [
-    { label: 'Usuarios', icon: <FaUser />, to: '/admin/gestion-clientes', roles: ['admin'] },
+    { label: 'Clientes', icon: <FaUser />, to: '/admin/gestion-clientes', roles: ['admin'] },
+    { label: 'Usuarios', icon: <FaUsers />, to: '/admin/usuarios', roles: ['admin'] },
     { label: 'Empleados', icon: <FaUserTie />, to: '/admin/gestion-empleados', roles: ['admin'] },
     { label: 'Reservas', icon: <FaClipboardList />, to: '/admin/reservas', roles: ['admin', 'empleado'] },
     { label: 'Reportes', icon: <FaChartBar />, to: '/admin/reportes', roles: ['admin'] },

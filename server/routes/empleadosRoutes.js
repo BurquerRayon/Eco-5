@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
         P.cedula,
         P.telefono,
         U.correo,
+        U.estado as cuenta_estado,
         Pe.turno,
         Pe.fecha_contratacion,
         Pe.estado,
@@ -24,7 +25,7 @@ router.get('/', async (req, res) => {
       JOIN Persona P ON U.id_persona = P.id_persona
       LEFT JOIN Personal Pe ON U.id_usuario = Pe.id_usuario
       JOIN Rol R ON U.id_rol = R.id_rol
-      WHERE U.id_rol = 2
+      WHERE U.id_rol = 2 AND U.verificado = 1
       ORDER BY P.apellido, P.nombre
     `);
     res.json(result.recordset);
@@ -82,7 +83,7 @@ router.get('/:id_usuario', async (req, res) => {
 router.post('/crear', async (req, res) => {
   const {
     nombre, apellido, cedula, fecha_nacimiento, edad,
-    telefono, id_nacionalidad, id_sexo, email, password,
+    telefono, id_nacionalidad, id_sexo, correo, contrasena,
     turno, fecha_contratacion, estado = true
   } = req.body;
 
@@ -113,13 +114,13 @@ router.post('/crear', async (req, res) => {
     // 2. Crear usuario
     const usuarioResult = await transaction.request()
       .input('id_persona', id_persona)
-      .input('email', email)
-      .input('password', password)
+      .input('correo', correo)
+      .input('contrasena', contrasena)
       .input('id_rol', 2) // Empleado
       .query(`
-        INSERT INTO Usuario (id_persona, email, password, id_rol, verificado)
+        INSERT INTO Usuario (id_persona, correo, contrasena, id_rol, verificado)
         OUTPUT INSERTED.id_usuario
-        VALUES (@id_persona, @email, @password, @id_rol, 1)
+        VALUES (@id_persona, @correo, @contrasena, @id_rol, 1)
       `);
 
     const id_usuario = usuarioResult.recordset[0].id_usuario;
@@ -149,7 +150,7 @@ router.put('/:id_usuario', async (req, res) => {
   const { id_usuario } = req.params;
   const {
     nombre, apellido, cedula, fecha_nacimiento, edad,
-    telefono, id_nacionalidad, id_sexo, email, password,
+    telefono, id_nacionalidad, id_sexo, correo, contrasena,
     turno, fecha_contratacion, estado
   } = req.body;
 
@@ -196,19 +197,21 @@ router.put('/:id_usuario', async (req, res) => {
       `);
 
     // 3. Actualizar credenciales si se proporcionan
-    if (email || password) {
-      const updateQuery = `
-        UPDATE Usuario SET
-          ${email ? 'email = @email,' : ''}
-          ${password ? 'password = @password,' : ''}
-          id_usuario = @id_usuario
-        WHERE id_usuario = @id_usuario
-      `.replace(/,(\s*)WHERE/, '$1WHERE');
-
+    if (correo || contrasena) {
+      let updateQuery = 'UPDATE Usuario SET ';
+      const queryParts = [];
       const request = transaction.request().input('id_usuario', id_usuario);
-      if (email) request.input('email', email);
-      if (password) request.input('password', password);
-
+      
+      if (correo) {
+        queryParts.push('correo = @correo');
+        request.input('correo', correo);
+      }
+      if (contrasena) {
+        queryParts.push('contrasena = @contrasena');
+        request.input('contrasena', contrasena);
+      }
+      
+      updateQuery += queryParts.join(', ') + ' WHERE id_usuario = @id_usuario';
       await request.query(updateQuery);
     }
 
@@ -250,6 +253,28 @@ router.delete('/:id_usuario', async (req, res) => {
   } catch (err) {
     console.error('Error al desactivar empleado:', err);
     res.status(500).json({ message: 'Error al desactivar empleado' });
+  }
+});
+
+// Cambiar estado de cuenta del empleado (habilitar/deshabilitar)
+router.put('/estado/:id_usuario', async (req, res) => {
+  const { id_usuario } = req.params;
+  const { estado } = req.body; // 'activo' o 'bloqueado'
+  
+  try {
+    await poolConnect;
+    await pool.request()
+      .input('id_usuario', id_usuario)
+      .input('estado', estado)
+      .query(`
+        UPDATE Usuario SET estado = @estado
+        WHERE id_usuario = @id_usuario
+      `);
+    
+    res.json({ message: `✅ Estado de cuenta actualizado a ${estado}` });
+  } catch (err) {
+    console.error('Error al cambiar estado de cuenta:', err);
+    res.status(500).json({ message: 'Error al cambiar estado de cuenta' });
   }
 });
 

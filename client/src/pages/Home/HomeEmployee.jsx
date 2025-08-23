@@ -79,7 +79,7 @@ const HomeEmployee = () => {
       ruta: "/map", 
       from: "HomeEmployee",
       icono: <FaMap />,
-      descripcion: "Asignar hábitats en el mapa",
+      descripcion: "Visualizar los hábitats en el mapa",
       color: "#27ae60"
     },
     {

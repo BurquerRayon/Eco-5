@@ -141,6 +141,20 @@ const GestionClientes = () => {
     }
   };
 
+  const calcularEdad = (fechaNacimiento) => {
+    if (!fechaNacimiento) return null;
+    const hoy = new Date();
+    const fechaNac = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+    const mesActual = hoy.getMonth();
+    const mesNacimiento = fechaNac.getMonth();
+    
+    if (mesActual < mesNacimiento || (mesActual === mesNacimiento && hoy.getDate() < fechaNac.getDate())) {
+      edad--;
+    }
+    return edad;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -170,6 +184,24 @@ const GestionClientes = () => {
         error.response?.data?.message || 'Error al guardar el cliente', 
         'error'
       );
+    }
+  };
+
+  const cambiarEstadoCuenta = async (id_usuario, estadoActual) => {
+    const nuevoEstado = estadoActual === 'activo' ? 'bloqueado' : 'activo';
+    const accion = nuevoEstado === 'activo' ? 'habilitar' : 'deshabilitar';
+    
+    if (!window.confirm(`¿Estás seguro de ${accion} la cuenta de este cliente?`)) return;
+
+    try {
+      await axios.put(`http://ecomaravilla2.duckdns.org:3001/api/cliente/estado/${id_usuario}`, {
+        estado: nuevoEstado
+      });
+      mostrarMensaje(`Cuenta ${nuevoEstado === 'activo' ? 'habilitada' : 'deshabilitada'} correctamente`, 'success');
+      cargarDatos();
+    } catch (error) {
+      console.error('Error:', error);
+      mostrarMensaje('Error al cambiar estado de la cuenta', 'error');
     }
   };
 
@@ -232,41 +264,57 @@ const GestionClientes = () => {
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Apellido</th>
               <th>Cédula</th>
               <th>Correo</th>
               <th>Teléfono</th>
+              <th>Edad</th>
               <th>Nacionalidad</th>
+              <th>Estado Cuenta</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {clientesFiltrados.map(cliente => (
-              <tr key={cliente.id_usuario}>
-                <td>{cliente.nombre || '-'}</td>
-                <td>{cliente.apellido || '-'}</td>
-                <td>{cliente.cedula || '-'}</td>
-                <td>{cliente.correo}</td>
-                <td>{cliente.telefono || '-'}</td>
-                <td>{cliente.nacionalidad || '-'}</td>
-                <td className="acciones-celda">
-                  <button 
-                    onClick={() => abrirModal(cliente)}
-                    className="btn-editar"
-                    title="Editar"
-                  >
-                    ✏️
-                  </button>
-                  <button 
-                    onClick={() => eliminarCliente(cliente.id_usuario)}
-                    className="btn-eliminar"
-                    title="Eliminar"
-                  >
-                    🗑️
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {clientesFiltrados.map(cliente => {
+              const edad = cliente.fecha_nacimiento ? calcularEdad(cliente.fecha_nacimiento) : null;
+              return (
+                <tr key={cliente.id_usuario}>
+                  <td>{`${cliente.nombre || ''} ${cliente.apellido || ''}`.trim() || '-'}</td>
+                  <td>{cliente.cedula || '-'}</td>
+                  <td>{cliente.correo}</td>
+                  <td>{cliente.telefono || '-'}</td>
+                  <td>{edad || '-'}</td>
+                  <td>{cliente.nacionalidad || '-'}</td>
+                  <td>
+                    <span className={`estado ${cliente.cuenta_estado === 'activo' ? 'activo' : 'inactivo'}`}>
+                      {cliente.cuenta_estado === 'activo' ? 'Habilitada' : 'Bloqueada'}
+                    </span>
+                  </td>
+                  <td className="acciones-celda">
+                    <button 
+                      onClick={() => abrirModal(cliente)}
+                      className="btn-editar"
+                      title="Editar"
+                    >
+                      ✏️
+                    </button>
+                    <button 
+                      onClick={() => cambiarEstadoCuenta(cliente.id_usuario, cliente.cuenta_estado)}
+                      className={`btn-estado ${cliente.cuenta_estado === 'activo' ? 'btn-deshabilitar' : 'btn-habilitar'}`}
+                      title={cliente.cuenta_estado === 'activo' ? 'Deshabilitar cuenta' : 'Habilitar cuenta'}
+                    >
+                      {cliente.cuenta_estado === 'activo' ? '🔒' : '🔓'}
+                    </button>
+                    <button 
+                      onClick={() => eliminarCliente(cliente.id_usuario)}
+                      className="btn-eliminar"
+                      title="Eliminar"
+                    >
+                      🗑️
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
