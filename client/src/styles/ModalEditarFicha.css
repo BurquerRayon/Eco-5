@@ -1,91 +1,216 @@
-.modal-editar {
-    position: fixed;
-    top: 50%;
-    left: 50%;
+/* ModalEditarFicha.css - Corregido para que no se salga del modal */
+.editar-ficha-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.editar-ficha-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 600px; /* Reducido ligeramente para mejor ajuste */
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 1001;
+  animation: editarFichaSlideIn 0.3s ease-out;
+}
+
+@keyframes editarFichaSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
     transform: translate(-50%, -50%);
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px 30px;
-    max-width: 600px;
-    width: 90%;
-    z-index: 1001; /* alto para asegurar visibilidad */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    font-family: Arial, sans-serif;
+  }
+}
+
+.editar-ficha-modal h2 {
+  margin: 0;
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  color: #2d3748;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  border-radius: 12px 12px 0 0;
+}
+
+.editar-ficha-form {
+  padding: 1.5rem;
+  box-sizing: border-box; /* Importante: incluye padding en el cálculo del ancho */
+}
+
+.editar-ficha-input,
+.editar-ficha-textarea,
+.editar-ficha-select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+  box-sizing: border-box; /* Esto es CRUCIAL para que no se salga */
+  font-family: inherit;
+}
+
+.editar-ficha-input:focus,
+.editar-ficha-textarea:focus,
+.editar-ficha-select:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+}
+
+.editar-ficha-input[type="file"] {
+  padding: 0.5rem;
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e0;
+  cursor: pointer;
+}
+
+.editar-ficha-input[type="file"]:hover {
+  border-color: #4299e1;
+  background-color: #ebf4ff;
+}
+
+.editar-ficha-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.editar-ficha-form-group {
+  margin-bottom: 1.25rem;
+}
+
+.editar-ficha-form-group-full {
+  grid-column: span 2;
+  width: 100%;
+  box-sizing: border-box; /* Asegura que el ancho incluya padding */
+}
+
+.editar-ficha-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+/* Textarea mejorado - que no se sale del modal */
+.editar-ficha-textarea {
+  height: 100px;
+  resize: none;
+  overflow-y: auto;
+  line-height: 1.5;
+  width: 100%;
+  box-sizing: border-box; /* Esto evita que se salga */
+  display: block;
+}
+
+.editar-ficha-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: flex-end;
+}
+
+.editar-ficha-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.editar-ficha-cancelar {
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+.editar-ficha-cancelar:hover {
+  background-color: #cbd5e0;
+}
+
+.editar-ficha-guardar {
+  background-color: #38a169;
+  color: white;
+}
+
+.editar-ficha-guardar:hover {
+  background-color: #2f855a;
+}
+
+/* Responsive - Asegurar que no se salga en móviles */
+@media (max-width: 768px) {
+  .editar-ficha-modal {
+    width: 95%;
+    max-width: 95%;
+    margin: 0;
   }
   
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+  .editar-ficha-form {
+    padding: 1rem;
   }
   
-  .modal-editar h2 {
-    margin-bottom: 20px;
-    font-weight: 700;
-    color: #0b3d91;
+  .editar-ficha-form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
   
-  .form-group {
-    display: flex;
+  .editar-ficha-form-group-full {
+    grid-column: span 1;
+  }
+  
+  .editar-ficha-input,
+  .editar-ficha-textarea,
+  .editar-ficha-select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .editar-ficha-buttons {
     flex-direction: column;
-    margin-bottom: 15px;
   }
   
-  .form-group label {
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: #333;
+  .editar-ficha-button {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .editar-ficha-modal {
+    width: 98%;
+    max-width: 98%;
   }
   
-  .form-group input,
-  .form-group textarea,
-  .form-group select {
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    resize: vertical;
+  .editar-ficha-modal h2 {
+    padding: 1rem;
+    font-size: 1.25rem;
   }
   
-  .form-group textarea {
-    min-height: 80px;
-    max-height: 150px;
+  .editar-ficha-form {
+    padding: 0.75rem;
   }
-  
-  .buttons-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 20px;
-  }
-  
-  .buttons-container button {
-    padding: 10px 25px;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .buttons-container .btn-guardar {
-    background-color: #4caf50;
-  }
-  
-  .buttons-container .btn-guardar:hover {
-    background-color: #45a049;
-  }
-  
-  .buttons-container .btn-cancelar {
-    background-color: #f44336;
-  }
-  
-  .buttons-container .btn-cancelar:hover {
-    background-color: #d32f2f;
-  }
-  
+}

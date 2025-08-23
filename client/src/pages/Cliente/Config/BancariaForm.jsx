@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import axios from 'axios';
@@ -29,16 +28,15 @@ const BancariaForm = () => {
     }
   }, [user]);
 
-const cargarBancos = async () => {
-  try {
-    const response = await axios.get('http://ecomaravilla2.duckdns.org:3001/api/cliente/bancos');
-    setBancos(response.data);
-    console.log('Bancos cargados:', response.data); // ← Agrega esto
-  } catch (error) {
-    console.error('Error al cargar bancos:', error);
-    setMensaje('Error al cargar la lista de bancos');
-  }
-};
+  const cargarBancos = async () => {
+    try {
+      const response = await axios.get('http://ecomaravilla2.duckdns.org:3001/api/cliente/bancos');
+      setBancos(response.data);
+    } catch (error) {
+      console.error('Error al cargar bancos:', error);
+      setMensaje('Error al cargar la lista de bancos');
+    }
+  };
 
   const cargarCuentasBancarias = async () => {
     try {
@@ -192,54 +190,42 @@ const cargarBancos = async () => {
       <h2>{modoEdicion ? 'Editar Cuenta Bancaria' : 'Agregar Cuenta Bancaria'}</h2>
       
       {mensaje && (
-        <div className={`mensaje ${mensaje.includes('✅') ? 'success' : 'error'}`}>
+        <div className={`bancaria-mensaje ${mensaje.includes('✅') ? 'success' : 'error'}`}>
           {mensaje}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="bancaria-form">
-        <div className="form-group">
-          <label htmlFor="numero_tarjeta">Número de Tarjeta:</label>
-          <input
-            type="text"
-            id="numero_tarjeta"
-            name="numero_tarjeta"
-            value={formData.numero_tarjeta}
-            onChange={handleChange}
-            placeholder="1234 5678 9012 3456"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="nombre_titular">Nombre del Titular:</label>
-          <input
-            type="text"
-            id="nombre_titular"
-            name="nombre_titular"
-            value={formData.nombre_titular}
-            onChange={handleChange}
-            placeholder="Nombre completo como aparece en la tarjeta"
-            required
-          />
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="fecha_expiracion">Fecha de Expiración:</label>
+        {/* Primera fila: numero de tarjeta | nombre del titular | numero del reverso */}
+        <div className="bancaria-form-row triple">
+          <div className="bancaria-form-group">
+            <label htmlFor="numero_tarjeta">Número de Tarjeta:</label>
             <input
-              type="date"
-              id="fecha_expiracion"
-              name="fecha_expiracion"
-              value={formData.fecha_expiracion}
+              type="text"
+              id="numero_tarjeta"
+              name="numero_tarjeta"
+              value={formData.numero_tarjeta}
               onChange={handleChange}
-              min={new Date().toISOString().split('T')[0]}
+              placeholder="1234 5678 9012 3456"
               required
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="ultimos_digitos">Numeros del reverso:</label>
+          <div className="bancaria-form-group">
+            <label htmlFor="nombre_titular">Nombre del Titular:</label>
+            <input
+              type="text"
+              id="nombre_titular"
+              name="nombre_titular"
+              value={formData.nombre_titular}
+              onChange={handleChange}
+              placeholder="Nombre completo"
+              required
+            />
+          </div>
+
+          <div className="bancaria-form-group">
+            <label htmlFor="ultimos_digitos">Números del reverso:</label>
             <input
               type="text"
               id="ultimos_digitos"
@@ -253,45 +239,61 @@ const cargarBancos = async () => {
           </div>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="tipo_tarjeta">Tipo de Tarjeta:</label>
-          <select
-            id="tipo_tarjeta"
-            name="tipo_tarjeta"
-            value={formData.tipo_tarjeta}
-            onChange={handleChange}
-            required
-          >
-            <option value="debito">Débito</option>
-            <option value="credito">Crédito</option>
-          </select>
+        {/* Segunda fila: fecha de expiracion | tipo de tarjeta | banco */}
+        <div className="bancaria-form-row triple">
+          <div className="bancaria-form-group">
+            <label htmlFor="fecha_expiracion">Fecha de Expiración:</label>
+            <input
+              type="date"
+              id="fecha_expiracion"
+              name="fecha_expiracion"
+              value={formData.fecha_expiracion}
+              onChange={handleChange}
+              min={new Date().toISOString().split('T')[0]}
+              required
+            />
+          </div>
+
+          <div className="bancaria-form-group">
+            <label htmlFor="tipo_tarjeta">Tipo de Tarjeta:</label>
+            <select
+              id="tipo_tarjeta"
+              name="tipo_tarjeta"
+              value={formData.tipo_tarjeta}
+              onChange={handleChange}
+              required
+            >
+              <option value="debito">Débito</option>
+              <option value="credito">Crédito</option>
+            </select>
+          </div>
+
+          <div className="bancaria-form-group">
+            <label htmlFor="id_banco">Banco:</label>
+            <select
+              id="id_banco"
+              name="id_banco"
+              value={formData.id_banco}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccione un banco</option>
+              {bancos.map(banco => (
+                <option key={banco.id_banco} value={banco.id_banco}>
+                  {banco.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="id_banco">Banco:</label>
-          <select
-            id="id_banco"
-            name="id_banco"
-            value={formData.id_banco}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Seleccione un banco</option>
-            {bancos.map(banco => (
-              <option key={banco.id_banco} value={banco.id_banco}>
-                {banco.nombre} {/* Asegúrate de que sea banco.nombre */}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-buttons">
-          <button type="submit" disabled={loading} className="btn-primary">
+        <div className="bancaria-form-buttons">
+          <button type="submit" disabled={loading} className="bancaria-btn-primary">
             {loading ? 'Guardando...' : (modoEdicion ? 'Actualizar' : 'Guardar')}
           </button>
           
           {modoEdicion && (
-            <button type="button" onClick={cancelarEdicion} className="btn-secondary">
+            <button type="button" onClick={cancelarEdicion} className="bancaria-btn-secondary">
               Cancelar
             </button>
           )}
@@ -300,23 +302,23 @@ const cargarBancos = async () => {
 
       {/* Lista de cuentas bancarias existentes */}
       {cuentasBancarias.length > 0 && (
-        <div className="cuentas-existentes">
+        <div className="bancaria-cuentas-existentes">
           <h3>Cuentas Bancarias Registradas</h3>
-          <div className="cuentas-list">
+          <div className="bancaria-cuentas-list">
             {cuentasBancarias.map(cuenta => (
-              <div key={cuenta.id_cuenta_banco} className="cuenta-card">
-                <div className="cuenta-info">
+              <div key={cuenta.id_cuenta_banco} className="bancaria-cuenta-card">
+                <div className="bancaria-cuenta-info">
                   <p><strong>Titular:</strong> {cuenta.nombre_titular}</p>
                   <p><strong>Tarjeta:</strong> **** **** **** {cuenta.numero_cuenta?.slice(-4)}</p>
                   <p><strong>Banco:</strong> {cuenta.nombre_banco}</p>
                   <p><strong>Tipo:</strong> {cuenta.tipo_tarjeta}</p>
                   <p><strong>Expira:</strong> {new Date(cuenta.fecha_expiracion).toLocaleDateString()}</p>
                 </div>
-                <div className="cuenta-actions">
-                  <button onClick={() => editarCuenta(cuenta)} className="btn-edit">
+                <div className="bancaria-cuenta-actions">
+                  <button onClick={() => editarCuenta(cuenta)} className="bancaria-btn-edit">
                     Editar
                   </button>
-                  <button onClick={() => eliminarCuenta(cuenta.id_cuenta_banco)} className="btn-delete">
+                  <button onClick={() => eliminarCuenta(cuenta.id_cuenta_banco)} className="bancaria-btn-delete">
                     Eliminar
                   </button>
                 </div>

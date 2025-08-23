@@ -4,7 +4,6 @@ import DatosPersonales from '../Cliente/Config/DatosPersonales';
 import BancariaForm from '../Cliente/Config/BancariaForm';
 import DocumentosForm from '../Cliente/Config/DocumentosForm';
 import SeguridadForm from '../Cliente/Config/SeguridadForm';
-import PreferenciasForm from '../Cliente/Config/PreferenciasForm';
 import { Link } from 'react-router-dom';
 
 const ClienteAjustes = () => {
@@ -51,13 +50,6 @@ const ClienteAjustes = () => {
         >
           Documentos Personales
         </button>
-
-        <button
-          className={`ajuste-card ${formularioActivo === 'preferencias' ? 'active' : ''}`}
-          onClick={() => manejarSeleccion('preferencias')}
-        >
-          Preferencias
-        </button>
       </div>
 
       <div className="formulario-render">
@@ -74,7 +66,6 @@ const ClienteAjustes = () => {
             {formularioActivo === 'seguridad' && <SeguridadForm />}
             {formularioActivo === 'bancaria' && <BancariaForm />}
             {formularioActivo === 'documentos' && <DocumentosForm />}
-            {formularioActivo === 'preferencias' && <PreferenciasForm />}
           </>
         )}
       </div>

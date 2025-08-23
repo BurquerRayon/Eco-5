@@ -1,82 +1,179 @@
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+/* ModalCrearFicha.css - Estilos exclusivos para ModalCrearFicha */
+.crear-ficha-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.crear-ficha-modal {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: crearFichaFadeIn 0.3s ease-out;
+}
+
+@keyframes crearFichaFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.crear-ficha-modal h2 {
+  margin: 0;
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  color: #2d3748;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  border-radius: 12px 12px 0 0;
+}
+
+.crear-ficha-form {
+  padding: 1.5rem;
+}
+
+.crear-ficha-input,
+.crear-ficha-textarea,
+.crear-ficha-select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.crear-ficha-input:focus,
+.crear-ficha-textarea:focus,
+.crear-ficha-select:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+}
+
+.crear-ficha-input::placeholder,
+.crear-ficha-textarea::placeholder {
+  color: #a0aec0;
+}
+
+.crear-ficha-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.crear-ficha-form-group {
+  margin-bottom: 1rem;
+}
+
+.crear-ficha-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+.crear-ficha-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 200px;
+  margin: 0.5rem 0 1rem 0;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.crear-ficha-botones {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: flex-end;
+}
+
+.crear-ficha-boton {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  font-family: inherit;
+}
+
+.crear-ficha-cancelar {
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+.crear-ficha-cancelar:hover {
+  background-color: #cbd5e0;
+}
+
+.crear-ficha-guardar {
+  background-color: #3182ce;
+  color: white;
+}
+
+.crear-ficha-guardar:hover {
+  background-color: #2b6cb0;
+}
+
+.crear-ficha-error {
+  color: #e53e3e;
+  background-color: #fed7d7;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin: 0 1.5rem 1rem 1.5rem;
+  font-size: 0.9375rem;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .crear-ficha-overlay {
+    padding: 0.5rem;
+  }
+  
+  .crear-ficha-modal {
+    max-height: 95vh;
+  }
+  
+  .crear-ficha-modal h2 {
+    padding: 1.25rem;
+    font-size: 1.25rem;
+  }
+  
+  .crear-ficha-form {
+    padding: 1.25rem;
+  }
+  
+  .crear-ficha-botones {
+    flex-direction: column;
+  }
+  
+  .crear-ficha-boton {
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
+    min-width: auto;
   }
-  
-  .modal-content {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 500px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  .modal-content h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-  }
-  
-  .modal-content input,
-  .modal-content textarea,
-  .modal-content select {
-    width: 100%;
-    margin-bottom: 15px;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
-  
-  .preview {
-    max-height: 150px;
-    object-fit: contain;
-    display: block;
-    margin: 10px auto;
-  }
-  
-  .botones {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-  }
-  
-  .cancelar {
-    background: #ccc;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .guardar {
-    background: #28a745;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .cancelar:hover {
-    background: #b1b1b1;
-  }
-  
-  .guardar:hover {
-    background: #218838;
-  }
-  
-  .error {
-    color: red;
-    margin-bottom: 10px;
-  }
-  
+}

@@ -7,7 +7,7 @@ const ModalCrearFicha = ({ onClose, onFichaCreada }) => {
   const [nombreCientifico, setNombreCientifico] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [habitat, setHabitat] = useState("");
-  const [tipo, setTipo] = useState("Fauna"); // Estado para tipo (Fauna/Flora)
+  const [tipo, setTipo] = useState("Fauna");
   const [imagen, setImagen] = useState(null);
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState("");
@@ -32,7 +32,7 @@ const ModalCrearFicha = ({ onClose, onFichaCreada }) => {
     formData.append("nombre_cientifico", nombreCientifico);
     formData.append("descripcion", descripcion);
     formData.append("id_habitat", habitat);
-    formData.append("tipo", tipo); // Añadir tipo al formData
+    formData.append("tipo", tipo);
     formData.append("imagen", imagen);
     formData.append("nombre_original", imagen.name);
 
@@ -54,18 +54,19 @@ const ModalCrearFicha = ({ onClose, onFichaCreada }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
+    <div className="crear-ficha-overlay">
+      <div className="crear-ficha-modal">
         <h2>Crear nueva ficha</h2>
 
-        {error && <p className="error">{error}</p>}
+        {error && <p className="crear-ficha-error">{error}</p>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="crear-ficha-form">
           <input
             type="text"
             placeholder="Nombre común"
             value={nombreComun}
             onChange={(e) => setNombreComun(e.target.value)}
+            className="crear-ficha-input"
           />
 
           <input
@@ -73,23 +74,33 @@ const ModalCrearFicha = ({ onClose, onFichaCreada }) => {
             placeholder="Nombre científico"
             value={nombreCientifico}
             onChange={(e) => setNombreCientifico(e.target.value)}
+            className="crear-ficha-input"
           />
 
           <textarea
             placeholder="Descripción"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
+            className="crear-ficha-textarea"
           />
 
-          <div className="form-group">
-            <label>Tipo:</label>
-            <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+          <div className="crear-ficha-form-group">
+            <label className="crear-ficha-label">Tipo:</label>
+            <select 
+              value={tipo} 
+              onChange={(e) => setTipo(e.target.value)}
+              className="crear-ficha-select"
+            >
               <option value="Fauna">Fauna</option>
               <option value="Flora">Flora</option>
             </select>
           </div>
 
-          <select value={habitat} onChange={(e) => setHabitat(e.target.value)}>
+          <select 
+            value={habitat} 
+            onChange={(e) => setHabitat(e.target.value)}
+            className="crear-ficha-select"
+          >
             <option value="" disabled hidden>
               Selecciona un hábitat
             </option>
@@ -98,15 +109,27 @@ const ModalCrearFicha = ({ onClose, onFichaCreada }) => {
             <option value="3">Cueva</option>
           </select>
 
-          <input type="file" accept="image/*" onChange={handleImagenChange} />
+          <input 
+            type="file" 
+            accept="image/*" 
+            onChange={handleImagenChange}
+            className="crear-ficha-input"
+          />
 
-          {preview && <img src={preview} alt="Preview" className="preview" />}
+          {preview && <img src={preview} alt="Preview" className="crear-ficha-preview" />}
 
-          <div className="botones">
-            <button type="button" onClick={onClose} className="cancelar">
+          <div className="crear-ficha-botones">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="crear-ficha-boton crear-ficha-cancelar"
+            >
               Cancelar
             </button>
-            <button type="submit" className="guardar">
+            <button 
+              type="submit" 
+              className="crear-ficha-boton crear-ficha-guardar"
+            >
               Guardar ficha
             </button>
           </div>

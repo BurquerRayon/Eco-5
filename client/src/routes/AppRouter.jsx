@@ -53,7 +53,6 @@ import ClientePago from "../pages/Cliente/ClientePago";
 
 // Cliente Config
 import DatosPC from "../pages/Cliente/Config/DatosPersonales";
-// import ContactoForm from '../pages/Cliente/Config/ContactoForm';
 import BancariaForm from "../pages/Cliente/Config/BancariaForm";
 import DocumentosForm from "../pages/Cliente/Config/DocumentosForm";
 

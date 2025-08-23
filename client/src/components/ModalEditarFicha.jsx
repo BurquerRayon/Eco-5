@@ -42,7 +42,7 @@ const ModalEditarFicha = ({ ficha, onClose, onFichaActualizada }) => {
     form.append("nombre_cientifico", formData.nombre_cientifico);
     form.append("habitat", formData.habitat);
     form.append("caracteristica", formData.caracteristica);
-    form.append("tipo", formData.tipo); // Asegurar que el tipo se envía
+    form.append("tipo", formData.tipo);
     
     if (imagenNueva) {
       form.append("imagen", imagenNueva);
@@ -70,75 +70,94 @@ const ModalEditarFicha = ({ ficha, onClose, onFichaActualizada }) => {
 
   return (
     <>
-      <div className="modal-overlay" onClick={onClose}></div>
-      <div className="modal-editar">
+      <div className="editar-ficha-overlay" onClick={onClose}></div>
+      <div className="editar-ficha-modal">
         <h2>Editar Ficha</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImagenNueva(e.target.files[0])}
-          />
-          
-          <div className="form-group">
-            <label>Nombre:</label>
-            <input
-              type="text"
-              name="nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-            />
+        <form onSubmit={handleSubmit} className="editar-ficha-form">
+          {/* Primera fila: Nombre | Nombre científico */}
+          <div className="editar-ficha-form-row">
+            <div className="editar-ficha-form-group">
+              <label className="editar-ficha-label">Nombre:</label>
+              <input
+                type="text"
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleChange}
+                className="editar-ficha-input"
+              />
+            </div>
+
+            <div className="editar-ficha-form-group">
+              <label className="editar-ficha-label">Nombre científico:</label>
+              <input
+                type="text"
+                name="nombre_cientifico"
+                value={formData.nombre_cientifico}
+                onChange={handleChange}
+                className="editar-ficha-input"
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Nombre científico:</label>
-            <input
-              type="text"
-              name="nombre_cientifico"
-              value={formData.nombre_cientifico}
-              onChange={handleChange}
-            />
+          {/* Segunda fila: Tipo | Hábitat */}
+          <div className="editar-ficha-form-row">
+            <div className="editar-ficha-form-group">
+              <label className="editar-ficha-label">Tipo:</label>
+              <select
+                name="tipo"
+                value={formData.tipo}
+                onChange={handleChange}
+                className="editar-ficha-select"
+              >
+                <option value="Fauna">Fauna</option>
+                <option value="Flora">Flora</option>
+              </select>
+            </div>
+
+            <div className="editar-ficha-form-group">
+              <label className="editar-ficha-label">Hábitat:</label>
+              <select
+                name="habitat"
+                value={formData.habitat}
+                onChange={handleChange}
+                className="editar-ficha-select"
+              >
+                <option value="1">Área Exterior</option>
+                <option value="2">Área Acuática</option>
+                <option value="3">Cueva</option>
+              </select>
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Tipo:</label>
-            <select
-              name="tipo"
-              value={formData.tipo}
-              onChange={handleChange}
-            >
-              <option value="Fauna">Fauna</option>
-              <option value="Flora">Flora</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>Hábitat:</label>
-            <select
-              name="habitat"
-              value={formData.habitat}
-              onChange={handleChange}
-            >
-            <option value="6">Área Exterior</option>
-            <option value="5">Área Acuática</option>
-            <option value="7">Cueva</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>Características:</label>
+          {/* Tercera fila: Características (ocupa todo el ancho) */}
+          <div className="editar-ficha-form-group editar-ficha-form-group-full">
+            <label className="editar-ficha-label">Características:</label>
             <textarea
               name="caracteristica"
               value={formData.caracteristica}
               onChange={handleChange}
+              className="editar-ficha-textarea"
+              placeholder="Describe las características del espécimen..."
             />
           </div>
 
-          <div className="buttons-container">
-            <button type="submit" className="btn-guardar">
+          {/* Cuarta fila: Imagen */}
+          <div className="editar-ficha-form-group editar-ficha-form-group-full">
+            <label className="editar-ficha-label">Imagen:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImagenNueva(e.target.files[0])}
+              className="editar-ficha-input"
+            />
+          </div>
+
+          {/* Botones: Guardar | Cancelar */}
+          <div className="editar-ficha-buttons">
+            <button type="submit" className="editar-ficha-button editar-ficha-guardar">
               Guardar
             </button>
-            <button type="button" className="btn-cancelar" onClick={onClose}>
+            <button type="button" className="editar-ficha-button editar-ficha-cancelar" onClick={onClose}>
               Cancelar
             </button>
           </div>
